@@ -1,0 +1,249 @@
+<!DOCTYPE BOOTROM1>
+<lattice:project mode="SingleComponent">
+    <spirit:component>
+        <spirit:vendor>Lattice Semiconductor Corporation</spirit:vendor>
+        <spirit:library>LEGACY</spirit:library>
+        <spirit:name>ROM</spirit:name>
+        <spirit:version>5.4</spirit:version>
+        <spirit:fileSets>
+            <spirit:fileset>
+                <spirit:name>Diamond_Simulation</spirit:name>
+                <spirit:group>simulation</spirit:group>
+                <spirit:file>
+                    <spirit:name>./BOOTROM1.v</spirit:name>
+                    <spirit:fileType>verilogSource</spirit:fileType>
+                </spirit:file>
+            </spirit:fileset>
+            <spirit:fileset>
+                <spirit:name>Diamond_Synthesis</spirit:name>
+                <spirit:group>synthesis</spirit:group>
+                <spirit:file>
+                    <spirit:name>./BOOTROM1.v</spirit:name>
+                    <spirit:fileType>verilogSource</spirit:fileType>
+                </spirit:file>
+            </spirit:fileset>
+        </spirit:fileSets>
+        <spirit:componentGenerators>
+            <spirit:componentGenerator spirit:hidden="true" spirit:scope="instance">
+                <spirit:name>Configuration</spirit:name>
+                <spirit:apiType>none</spirit:apiType>
+                <spirit:generatorExe>${sbp_path}/generate_core.tcl</spirit:generatorExe>
+                <spirit:group>CONFIG</spirit:group>
+            </spirit:componentGenerator>
+        </spirit:componentGenerators>
+        <spirit:model>
+            <spirit:views/>
+            <spirit:ports/>
+        </spirit:model>
+        <spirit:vendorExtensions>
+            <lattice:device>LFE5UM5G-25F-8MG285C</lattice:device>
+            <lattice:synthesis>synplify</lattice:synthesis>
+            <lattice:date>2016-06-17.20:21:10</lattice:date>
+            <lattice:modified>2016-06-17.20:21:10</lattice:modified>
+            <lattice:diamond>3.7.1.502</lattice:diamond>
+            <lattice:language>Verilog</lattice:language>
+            <lattice:attributes>
+                <lattice:attribute lattice:name="AddComponent">false</lattice:attribute>
+                <lattice:attribute lattice:name="BBox">false</lattice:attribute>
+                <lattice:attribute lattice:name="Change4to5">false</lattice:attribute>
+                <lattice:attribute lattice:name="ChangeConfig">false</lattice:attribute>
+                <lattice:attribute lattice:name="ChangeConnect">false</lattice:attribute>
+                <lattice:attribute lattice:name="ChangeDevice">false</lattice:attribute>
+                <lattice:attribute lattice:name="ChangeLocate">false</lattice:attribute>
+                <lattice:attribute lattice:name="ChangePack">false</lattice:attribute>
+                <lattice:attribute lattice:name="ChangePart">false</lattice:attribute>
+                <lattice:attribute lattice:name="ChangeSynthesis">false</lattice:attribute>
+                <lattice:attribute lattice:name="CoreType">LPM</lattice:attribute>
+                <lattice:attribute lattice:name="DCU_RXREFCLK">PRIMARY</lattice:attribute>
+                <lattice:attribute lattice:name="DCU_TXREFCLK">PRIMARY</lattice:attribute>
+                <lattice:attribute lattice:name="Migrate">false</lattice:attribute>
+                <lattice:attribute lattice:name="RemovedComponent">false</lattice:attribute>
+            </lattice:attributes>
+            <lattice:elements/>
+            <lattice:lpc>
+                <lattice:lpcsection lattice:name="Device"/>
+                <lattice:lpcentry>
+                    <lattice:lpckey>Family</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">ecp5um5g</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>OperatingCondition</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">COM</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>Package</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">CSFBGA285</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>PartName</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">LFE5UM5G-25F-8MG285C</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>PartType</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">LFE5UM5G-25F</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>SpeedGrade</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">8</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>Status</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">C</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcsection lattice:name="IP"/>
+                <lattice:lpcentry>
+                    <lattice:lpckey>CoreName</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">ROM</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>CoreRevision</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">5.4</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>CoreStatus</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">Demo</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>CoreType</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">LPM</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>Date</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">06/17/2016</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>ModuleName</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">BOOTROM1</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>ParameterFileVersion</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">1.0</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>SourceFormat</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">verilog</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>Time</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">20:21:09</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>VendorName</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">Lattice Semiconductor Corporation</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcsection lattice:name="Parameters"/>
+                <lattice:lpcentry>
+                    <lattice:lpckey>Address</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">1024</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>ByteSize</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">9</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>ClockEn</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">0</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>Data</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">16</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>Destination</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">Synplicity</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>EDIF</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">1</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>EnECC</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">0</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>Expression</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">BusA(0 to 7)</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>IO</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">0</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>Init</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">0</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>MemFile</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">c:/lscc/diamond/3.3_x64/examples/flea_ohm_amiga/bootrom1/boot.hex</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>MemFormat</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">hex</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>Optimization</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">Speed</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>Order</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">Big Endian [MSB:LSB]</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>OutputEn</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">0</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>Pipeline</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">0</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>Reset</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">Sync</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>Reset1</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">Sync</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>VHDL</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">0</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>Verilog</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">1</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>Write</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">Normal</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>enByte</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">0</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcentry>
+                    <lattice:lpckey>init_data</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">0</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcsection lattice:name="FilesGenerated"/>
+                <lattice:lpcentry>
+                    <lattice:lpckey>c:/lscc/diamond/3.3_x64/examples/flea_ohm_amiga/bootrom1/boot.hex</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">mem</lattice:lpcvalue>
+                </lattice:lpcentry>
+                <lattice:lpcsection lattice:name="Command"/>
+                <lattice:lpcentry>
+                    <lattice:lpckey>cmd_line</lattice:lpckey>
+                    <lattice:lpcvalue lattice:resolve="constant">-w -n BOOTROM1 -lang verilog -synth synplify -bus_exp 7 -bb -arch sa5p00g -type romblk -device LFE5UM5G-25F -addr_width 10 -data_width 16 -num_words 1024 -cascade -1 -memfile "c:/lscc/diamond/3.3_x64/examples/flea_ohm_amiga/bootrom1/boot.hex" -memformat hex</lattice:lpcvalue>
+                </lattice:lpcentry>
+            </lattice:lpc>
+            <lattice:groups/>
+        </spirit:vendorExtensions>
+    </spirit:component>
+    <spirit:design>
+        <spirit:vendor>LATTICE</spirit:vendor>
+        <spirit:library>LOCAL</spirit:library>
+        <spirit:name>BOOTROM1</spirit:name>
+        <spirit:version>1.0</spirit:version>
+        <spirit:componentInstances/>
+        <spirit:adHocConnections/>
+    </spirit:design>
+</lattice:project>

@@ -1,0 +1,2 @@
+VHDL_ENTITY_ONLY C64_Clock DEFIN C64_Clock.vhd
+MODULE C64_Clock DEFIN C64_Clock.vhd

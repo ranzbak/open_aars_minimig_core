@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BaliProject version="3.2" title="Minimig" device="LFE5U-25F-6BG381C" default_implementation="impl1">
+    <Options/>
+    <Implementation title="impl1" dir="impl1" description="impl1" synthesis="synplify" default_strategy="Strategy1">
+        <Options def_top="FleaFPGA_Ohm_A5" top="FleaFPGA_Ohm_A5"/>
+        <Source name="RTL/FleaFPGA_Ohm_A5_minimig.vhd" type="VHDL" type_short="VHDL">
+            <Options top_module="FleaFPGA_Ohm_A5"/>
+        </Source>
+        <Source name="impl1/source/Fampiga.vhd" type="VHDL" type_short="VHDL">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/Agnus.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/akiko.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/Amber.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/Audio.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/Beamcounter.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/Bitplanes.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/Blitter.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/BootRom.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/cfide.vhd" type="VHDL" type_short="VHDL">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/CIA8520.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/Clock.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/Copper.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/Debounce.vhd" type="VHDL" type_short="VHDL">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/Denise.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/Floppy.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/Gary.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/Gayle.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/Minimig1.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/Paula.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/PS2Keyboard.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="RTL/sdram_cache.vhd" type="VHDL" type_short="VHDL">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/twowaycache.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="Cache_DataRAM/Cache_DataRAM.sbx" type="sbx" type_short="SBX">
+            <Options/>
+        </Source>
+        <Source name="Cache_BlockRAM/Cache_BlockRAM.sbx" type="sbx" type_short="SBX">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/Sprites.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/TG68K.vhd" type="VHDL" type_short="VHDL">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/TG68K_ALU.vhd" type="VHDL" type_short="VHDL">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/TG68K_Pack.vhd" type="VHDL" type_short="VHDL">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/TG68KdotC_Kernel.vhd" type="VHDL" type_short="VHDL">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/Userio.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/poweronreset.vhd" type="VHDL" type_short="VHDL">
+            <Options/>
+        </Source>
+        <Source name="OSDBootstrap/OSDBootstrap.sbx" type="sbx" type_short="SBX">
+            <Options/>
+        </Source>
+        <Source name="RTL/C64_Clock/C64_Clock.sbx" type="sbx" type_short="SBX">
+            <Options/>
+        </Source>
+        <Source name="RTL/DVI_PLL/DVI_PLL.sbx" type="sbx" type_short="SBX">
+            <Options/>
+        </Source>
+        <Source name="ddr_out/ddr_out.sbx" type="sbx" type_short="SBX">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/HDMI/aux_ecc1.vhd" type="VHDL" type_short="VHDL">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/HDMI/aux_ecc2.vhd" type="VHDL" type_short="VHDL">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/HDMI/aux_encoder.vhd" type="VHDL" type_short="VHDL">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/HDMI/dvid.vhd" type="VHDL" type_short="VHDL">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/HDMI/dvienc_defs.vhd" type="VHDL" type_short="VHDL">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/HDMI/edvi_ucode.vhd" type="VHDL" type_short="VHDL">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/HDMI/infoframe_rom_800x600_60hz_40M_48k.vhd" type="VHDL" type_short="VHDL">
+            <Options/>
+        </Source>
+        <Source name="impl1/source/HDMI/TMDS_encoder.vhd" type="VHDL" type_short="VHDL">
+            <Options/>
+        </Source>
+        <Source name="JBBoot/JBBoot.sbx" type="sbx" type_short="SBX">
+            <Options/>
+        </Source>
+        <Source name="flash_config.xcf" type="Programming Project File" type_short="Programming">
+            <Options/>
+        </Source>
+        <Source name="FleaFPGA_Ohm_A5.lpf" type="Logic Preference" type_short="LPF">
+            <Options/>
+        </Source>
+    </Implementation>
+    <Strategy name="Area2" file="Area2.sty"/>
+    <Strategy name="Strategy1" file="Minimig1.sty"/>
+</BaliProject>

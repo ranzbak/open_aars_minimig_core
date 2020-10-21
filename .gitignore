@@ -1,0 +1,6 @@
+project_1/*
+*.log
+*.jou
+vivado_*
+.Xil/*
+**.lock
