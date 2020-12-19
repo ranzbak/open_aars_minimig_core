@@ -354,7 +354,7 @@ mysdram : entity work.sdram
 		sd_cas => sdr_cas,
 
 		sysclk => clk,
-		reset_in	=> reset_n,
+		reset_in	=> reset_n, -- 0 is reset
 	
 		hostWR => hostWR,
 		hostAddr	=> hostAddr,

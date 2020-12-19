@@ -29,31 +29,37 @@ use IEEE.STD_LOGIC_UNSIGNED.all;
  
 entity cfide is
    port ( 
-		sysclk: in std_logic;	
-		n_reset: in std_logic;	
-		cpuena_in: in std_logic;			
-		memdata_in: in std_logic_vector(15 downto 0);		
-		addr: in std_logic_vector(23 downto 0);
-		cpudata_in: in std_logic_vector(15 downto 0);	
-		state: in std_logic_vector(1 downto 0);		
-		lds: in std_logic;			
-		uds: in std_logic;
-		sd_di		: in std_logic;
-		
-		fastramsize : out std_logic_vector(2 downto 0);
+		sysclk       : in std_logic;
+		n_reset      : in std_logic;
+
+		-- Memory in
+		cpuena_in    : in std_logic;
+		memdata_in   : in std_logic_vector(15 downto 0);
+		addr         : in std_logic_vector(23 downto 0);
+		cpudata_in   : in std_logic_vector(15 downto 0);
+		state        : in std_logic_vector(1 downto 0);
+		lds          : in std_logic;
+		uds          : in std_logic;
+		sd_di        : in std_logic;
+
+		-- Config
+		fastramsize  : out std_logic_vector(2 downto 0);
 		turbochipram : out std_logic;
-		scandoubler : out std_logic;
-		 
-		memce: out std_logic;			
-		cpudata: out std_logic_vector(15 downto 0);		
-		cpuena: buffer std_logic;			
-		sd_cs 		: out std_logic_vector(7 downto 0);
-		sd_clk 		: out std_logic;
-		sd_do		: out std_logic;
-		sd_dimm		: in std_logic;		--for sdcard
-		enaWRreg    : in std_logic:='1';
-		debugTxD : out std_logic;
-		debugRxD : in std_logic
+		scandoubler  : out std_logic;
+
+		-- Memory out
+		memce        : out std_logic;
+		cpudata      : out std_logic_vector(15 downto 0);
+		cpuena       : buffer std_logic;
+		sd_cs        : out std_logic_vector(7 downto 0);
+		sd_clk       : out std_logic;
+		sd_do        : out std_logic;
+		sd_dimm      : in std_logic;		--for sdcard
+
+		enaWRreg     : in std_logic :='1';
+
+		debugTxD     : out std_logic;
+		debugRxD     : in std_logic
    );
 
 end cfide;

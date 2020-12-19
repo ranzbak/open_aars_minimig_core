@@ -192,9 +192,9 @@ module Minimig1
 	output	n_hsync,				// horizontal sync
 	output	n_vsync,				// vertical sync
 	output	video_blank,				// video blanking
-	output	[3:0] red,			// red
-	output	[3:0] green,		// green
-	output	[3:0] blue,			// blue
+	output	[7:0] red,			// red
+	output	[7:0] green,		// green
+	output	[7:0] blue,			// blue
 	// audio
 	output	left,				// audio bitstream left (sigma delta)
 	output	right,				// audio bitstream right (sigma delta)
@@ -655,9 +655,9 @@ Amber AMBER1
 	._hsync_in(_hsync_i),
 	._vsync_in(_vsync_i),
 	._csync_in(_csync_i),
-	.red_out(red),
-	.blue_out(blue),
-	.green_out(green),
+	.red_out(red[7:4]),
+	.blue_out(blue[7:4]),
+	.green_out(green[7:4]),
 	._hsync_out(n_hsync),
 	._vsync_out(n_vsync)
 );
@@ -1457,9 +1457,10 @@ assign doe = (r_w & ~_as);
 //always @(data)
 //	data_out <= wrdata;
 assign data_out = wrdata;
-always @(clk or data_in)
+always @(clk or data_in) begin
 	if (!clk)
 		ldata_in <= data_in;
+end
 //assign ldata_in = data_in;
 // ----------------------------------------------------------------------------------------------------------------------------------------------------- //
 

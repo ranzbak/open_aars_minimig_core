@@ -224,7 +224,7 @@ begin
       joy_autorepeat <= joy_autorepeat+1;
 end
 
-always @(joy2enable or _xjoy2 or osd_ctrl)
+always @(joy2enable or _xjoy2 or osd_ctrl or joy_click)
 	if (~joy2enable && (joy_click || joy_hold))
 		if ( &(~_xjoy2[3:0]) ) // MENU: press all 4 buttons
 			t_osd_ctrl = KEY_MENU;

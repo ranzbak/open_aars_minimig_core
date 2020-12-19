@@ -21,10 +21,10 @@ clean:
 %.bin: %.asm
 	$(ASM) $(ASM_OPTS) -Fbin -o $@ $<
 
-osdload.vhd: osdload.bin 
+osdload.vhd: osdload.bin
 	$(SCRIPT_DIR)/osdbootstrap_bin2vhdl.py $< $@
 
-jbboot.vhd: amigaboot.bin 
+jbboot.vhd: amigaboot.bin
 	$(SCRIPT_DIR)/jbboot_bin2vhdl.py $< $@
 
 .PHONY: install

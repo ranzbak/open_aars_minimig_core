@@ -28,41 +28,41 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 
 entity TG68K is
-   port(        
-		clk           : in std_logic;
-		reset         : in std_logic;
-        clkena_in     : in std_logic:='1';
-        IPL           : in std_logic_vector(2 downto 0):="111";
-        dtack         : in std_logic;
-        vpa           : in std_logic:='1';
-        ein           : in std_logic:='1';
-        addr          : buffer std_logic_vector(31 downto 0);
-        data_read  	  : in std_logic_vector(15 downto 0);
-        data_write 	  : buffer std_logic_vector(15 downto 0);
-        as            : out std_logic;
-        uds           : out std_logic;
-        lds           : out std_logic;
-        rw            : out std_logic;
-        e             : out std_logic;
-        vma           : buffer std_logic;
-        wrd           : out std_logic;
-        ena7RDreg      : in std_logic:='1';
-        ena7WRreg      : in std_logic:='1';
-        enaWRreg      : in std_logic:='1';
-        
-        fromram    	  : in std_logic_vector(15 downto 0);
-        ramready      : in std_logic:='0';
-        cpu           : in std_logic_vector(1 downto 0);
-		  fastramcfg	: in std_logic_vector(2 downto 0);
-		  turbochipram : in std_logic;
-        ramaddr    	  : out std_logic_vector(31 downto 0);
-        cpustate      : out std_logic_vector(5 downto 0);
-		nResetOut	  : out std_logic;
-        skipFetch     : buffer std_logic;
-        cpuDMA         : buffer std_logic;
-        ramlds        : out std_logic;
-        ramuds        : out std_logic
-        );
+  port(        
+    clk          : in std_logic;
+		reset        : in std_logic;
+    clkena_in    : in std_logic :='1';
+    IPL          : in std_logic_vector(2 downto 0) :="111";
+    dtack        : in std_logic;
+    vpa          : in std_logic :='1';
+    ein          : in std_logic :='1';
+    addr         : buffer std_logic_vector(31 downto 0);
+    data_read    : in std_logic_vector(15 downto 0);
+    data_write   : buffer std_logic_vector(15 downto 0);
+    as           : out std_logic;
+    uds          : out std_logic;
+    lds          : out std_logic;
+    rw           : out std_logic;
+    e            : out std_logic;
+    vma          : buffer std_logic;
+    wrd          : out std_logic;
+    ena7RDreg    : in std_logic :='1';
+    ena7WRreg    : in std_logic :='1';
+    enaWRreg     : in std_logic :='1';
+
+    fromram      : in std_logic_vector(15 downto 0);
+    ramready     : in std_logic :='0';
+    cpu          : in std_logic_vector(1 downto 0);
+		fastramcfg   : in std_logic_vector(2 downto 0);
+		turbochipram : in std_logic;
+    ramaddr      : out std_logic_vector(31 downto 0);
+    cpustate     : out std_logic_vector(5 downto 0);
+		nResetOut    : out std_logic;
+    skipFetch    : out std_logic;
+    cpuDMA       : buffer std_logic;
+    ramlds       : out std_logic;
+    ramuds       : out std_logic
+  );
 end TG68K;
 
 ARCHITECTURE logic OF TG68K IS
@@ -85,7 +85,7 @@ COMPONENT TG68KdotC_Kernel
 		IPL_autovector   	: in std_logic:='0';
 		CPU             	: in std_logic_vector(1 downto 0):="00";  -- 00->68000  01->68010  11->68020(only same parts - yet)
         addr           		: buffer std_logic_vector(31 downto 0);
-        data_write        	: out std_logic_vector(15 downto 0);
+        data_write        	: buffer std_logic_vector(15 downto 0);
 		nWr			  		: out std_logic;
 		nUDS, nLDS	  		: out std_logic;
 		nResetOut	  		: out std_logic;
@@ -222,32 +222,32 @@ end process;
 
 pf68K_Kernel_inst: TG68KdotC_Kernel 
 	generic map(
-		SR_Read => 2,         	--0=>user,   1=>privileged,      2=>switchable with CPU(0)
-		VBR_Stackframe => 2,  	--0=>no,     1=>yes/extended,    2=>switchable with CPU(0)
-		extAddr_Mode => 2,    	--0=>no,     1=>yes,    2=>switchable with CPU(1)
-		MUL_Mode => 2,	   		--0=>16Bit,  1=>32Bit,  2=>switchable with CPU(1),  3=>no MUL,  
-		DIV_Mode => 2		  	 --0=>16Bit,  1=>32Bit,  2=>switchable with CPU(1),  3=>no DIV,  
+		SR_Read => 2,         	   --0=>user,   1=>privileged,      2=>switchable with CPU(0)
+		VBR_Stackframe => 2,  	   --0=>no,     1=>yes/extended,    2=>switchable with CPU(0)
+		extAddr_Mode => 2,    	   --0=>no,     1=>yes,    2=>switchable with CPU(1)
+		MUL_Mode => 2,	   		   --0=>16Bit,  1=>32Bit,  2=>switchable with CPU(1),  3=>no MUL,  
+		DIV_Mode => 2		  	   --0=>16Bit,  1=>32Bit,  2=>switchable with CPU(1),  3=>no DIV,  
 		)
   PORT MAP(
         clk => clk,               	-- : in std_logic;
         nReset => reset,            -- : in std_logic:='1';			--low active
-        clkena_in => clkena,	        -- : in std_logic:='1';
---        data_in => r_data,       -- : in std_logic_vector(15 downto 0);
---        data_in => data_read,       -- : in std_logic_vector(15 downto 0);
-        data_in => datatg68,       -- : in std_logic_vector(15 downto 0);
-		IPL => cpuIPL,				  	-- : in std_logic_vector(2 downto 0):="111";
+        clkena_in => clkena,	    -- : in std_logic:='1';
+--        data_in => r_data,        -- : in std_logic_vector(15 downto 0);
+--        data_in => data_read,     -- : in std_logic_vector(15 downto 0);
+        data_in => datatg68,        -- : in std_logic_vector(15 downto 0);
+		IPL => cpuIPL,				-- : in std_logic_vector(2 downto 0):="111";
 		IPL_autovector => '1',   	-- : in std_logic:='0';
         addr => cpuaddr,           	-- : buffer std_logic_vector(31 downto 0);
-        data_write => data_write,     -- : out std_logic_vector(15 downto 0);
+        data_write => data_write,   -- : out std_logic_vector(15 downto 0);
 		busstate => state,	  	  	-- : buffer std_logic_vector(1 downto 0);	
         regin => open,          	-- : out std_logic_vector(31 downto 0);
-		nWr => wr,			  	-- : out std_logic;
+		nWr => wr,			  	    -- : out std_logic;
 		nUDS => uds_in,
 		nLDS => lds_in,	  			-- : out std_logic;
 		nResetOut => nResetOut,
 		CPU => cpu,
 		skipFetch => skipFetch 		-- : out std_logic
-        );
+    );
  
 	PROCESS (clk)
 	BEGIN

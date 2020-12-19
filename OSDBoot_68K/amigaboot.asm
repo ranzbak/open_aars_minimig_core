@@ -28,7 +28,7 @@
 ;
 ;
 ; how to build:
-; 1. assemble using  AS V 1.42 by Alfred Arnold 
+; 1. assemble using  AS V 1.42 by Alfred Arnold
 ;    http://john.ccac.rwth-aachen.de:8000/as/download.html
 ;    download aswcurr.zip and unzip it to c:\bin\as
 ; 2. execute s.bat
@@ -113,7 +113,7 @@ disk_buffer equ plane0-$4000
 ;------------------------------------------------------------------------------
 Start:
 ;------------------------------------------------------------------------------
-;	lea	$010000,A7	; 
+;	lea	$010000,A7	;
 	lea	$dff000,A6	; custom base
 
 	move.w	#$9000,BPLCON0(A6)	;hires, 1 bitplane

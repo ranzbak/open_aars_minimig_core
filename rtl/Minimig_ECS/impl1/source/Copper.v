@@ -195,7 +195,7 @@ always @(posedge clk)
 // more according to what happens in a real amiga... I think), else the contents of
 // ir2[8:1] is selected 
 // (if you ask yourself: IR2? is this a bug? then check how ir1/ir2 are loaded in this design)
-always @(selins or selreg or ir2)
+always @(selins or selreg or ir2 or enable)
 	if (enable & selins) //load our instruction register
 		reg_address_out[8:1] = (COPINS[8:1]);
 	else if (enable & selreg)//load register in move instruction

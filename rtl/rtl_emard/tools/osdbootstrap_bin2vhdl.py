@@ -35,6 +35,7 @@ else:
 fout.write("""\
 -- Preloaded RAM with single clock
 -- converted by osdbootstrap_bin2vhdl.py
+-- Changed by Paul Honig for use with micro SD cards
 
 -- when pass_thru enabled on port
 -- then Read-during-write on port should return newly written data

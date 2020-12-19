@@ -63,31 +63,32 @@ use work.TG68K_Pack.all;
 
 entity TG68KdotC_Kernel is
 	generic(
-		SR_Read : integer:= 0;         --0=>user,   1=>privileged,      2=>switchable with CPU(0)
-		VBR_Stackframe : integer:= 0;  --0=>no,     1=>yes/extended,    2=>switchable with CPU(0)
-		extAddr_Mode : integer:= 0;    --0=>no,     1=>yes,    2=>switchable with CPU(1)
-		MUL_Mode : integer := 0;	   --0=>16Bit,  1=>32Bit,  2=>switchable with CPU(1),  3=>no MUL,  
-		DIV_Mode : integer := 0;	   --0=>16Bit,  1=>32Bit,  2=>switchable with CPU(1),  3=>no DIV,  
-		BitField : integer := 0		   --0=>no,     1=>yes,    2=>switchable with CPU(1)  
-		);
-   port(clk               	: in std_logic;
-        nReset             	: in std_logic;			--low active
-        clkena_in         	: in std_logic:='1';
-        data_in          	: in std_logic_vector(15 downto 0);
-		IPL				  	: in std_logic_vector(2 downto 0):="111";
-		IPL_autovector   	: in std_logic:='0';
-		CPU             	: in std_logic_vector(1 downto 0):="00";  -- 00->68000  01->68010  11->68020(only some parts - yet)
-        addr           		: buffer std_logic_vector(31 downto 0);
-        data_write        	: out std_logic_vector(15 downto 0);
-		nWr			  		: out std_logic;
-		nUDS, nLDS	  		: out std_logic;
-		busstate	  	  	: out std_logic_vector(1 downto 0);	-- 00-> fetch code 10->read data 11->write data 01->no memaccess
-		nResetOut	  		: out std_logic;
-        FC              	: out std_logic_vector(2 downto 0);
--- for debug		
-		skipFetch	  		: out std_logic;
-        regin          		: buffer std_logic_vector(31 downto 0)
-        );
+		SR_Read        :  integer:= 0; --0 =>user,   1=>privileged,      2=>switchable with CPU(0)
+		VBR_Stackframe :  integer:= 0; --0 =>no,     1=>yes/extended,    2=>switchable with CPU(0)
+		extAddr_Mode   :  integer:= 0; --0 =>no,     1=>yes,    2=>switchable with CPU(1)
+		MUL_Mode       :  integer:= 0; --0 =>16Bit,  1=>32Bit,  2=>switchable with CPU(1),  3=>no MUL,
+		DIV_Mode       :  integer:= 0; --0 =>16Bit,  1=>32Bit,  2=>switchable with CPU(1),  3=>no DIV,
+		BitField       :  integer:= 0  --0 =>no,     1=>yes,    2=>switchable with CPU(1)
+	);
+	port(
+		  clk            :  in std_logic;
+			nReset         :  in std_logic;			--low active
+			clkena_in      :  in std_logic:='1';
+			data_in        :  in std_logic_vector(15 downto 0);
+			IPL            :  in std_logic_vector(2 downto 0):="111";
+			IPL_autovector :  in std_logic:='0';
+			CPU            :  in std_logic_vector(1 downto 0):="00";  -- 00->68000  01->68010  11->68020(only some parts - yet)
+			addr           :  buffer std_logic_vector(31 downto 0);
+			data_write     :  buffer std_logic_vector(15 downto 0);
+			nWr            :  out std_logic;
+			nUDS, nLDS     :  out std_logic;
+			busstate       :  out std_logic_vector(1 downto 0);	-- 00-> fetch code 10->read data 11->write data 01->no memaccess
+			nResetOut      :  out std_logic;
+			FC             :  out std_logic_vector(2 downto 0);
+			-- for debug
+			skipFetch      :  out std_logic;
+			regin          :  buffer std_logic_vector(31 downto 0)
+	);
 end TG68KdotC_Kernel;
 
 architecture logic of TG68KdotC_Kernel is

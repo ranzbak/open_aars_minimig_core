@@ -4,3 +4,9 @@ project_1/*
 vivado_*
 .Xil/*
 **.lock
+*.o
+xvhdl.log
+
+# OSDLoad
+OSDBoot_68K/*.bin
+OSDBoot_68K/*.vhd

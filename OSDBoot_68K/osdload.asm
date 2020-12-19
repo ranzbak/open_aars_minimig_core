@@ -97,10 +97,10 @@ start:
 
 start5
 ;_pause bra _pause
-       move.b	#'A',RS232_base
+;       move.b	#'A',RS232_base
 			bsr			fat_cdroot
 			;d0 - LBA
-       move.b	#'R',RS232_base
+;       move.b	#'R',RS232_base
 			lea		mmio_name,a1
 			bsr		fat_findfile
 			beq.s     start3
@@ -110,8 +110,12 @@ start5
 			move.l		#$2000,a0
 			bsr		_LoadFile2
 			beq.s     start4
+
+			jsr debug_dump_rom
+
 			jmp		$2000
 start4     move.w  #$60fe,$2000
+
 			jmp		$2000
 
 ;			bra.s     start4
@@ -998,3 +1002,30 @@ _temp_d0            ds.l    1   ;temp debug register for D0
 _temp_d1            ds.l    1   ;temp debug register for D1
 _temp_a0            ds.l    1   ;temp debug register for A0
 _temp_a1            ds.l    1   ;temp debug register for A0
+
+debug_dump_rom:
+			; DEBUG
+			move.b $8000,d0 ; Read to set trigger to
+			; 2 4-byte reads to see what data is retrieved.
+			move.l $2000,d0
+			bsr dump_d0_debug
+			move.l $2004,d0
+			bsr dump_d0_debug
+			move.l $2008,d0
+			bsr dump_d0_debug
+			move.l $200B,d0
+			bsr dump_d0_debug
+			move.l $2010,d0
+			bsr dump_d0_debug
+			move.l #$2e7c,$2000
+			move.l #0000,$2002
+			move.l $2000,d0
+			bsr dump_d0_debug
+			move.l $2004,d0
+			bsr dump_d0_debug
+			move.l $2008,d0
+			bsr dump_d0_debug
+			move.l $200B,d0
+			bsr dump_d0_debug
+			move.l $2010,d0
+			bsr dump_d0_debug
