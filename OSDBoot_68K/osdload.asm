@@ -9,7 +9,7 @@ IDEbase               equ $DA2000
 IDEbase2              equ $DA1000
 SPIbase               equ $DA4000
 KEYbase               equ $DE0000
-;_secbuf               equ $1000
+_secbuf               equ $1000
 ;buffer1              equ $10200
 
 ; IDE register map
@@ -84,13 +84,13 @@ start:
 ;       jsr		  _ide_init
        jsr		 spi_init
        bne.s     start2
-       move.b	 #'S',RS232_base
+;       move.b	 #'S',RS232_base
 
        move.w	 #$40,_drive	;Superfloppy
 	   bsr		 _FindVolume
 ;       bsr       _main
        beq.s     start5
-       move.b	 #'T',RS232_base
+;       move.b	 #'T',RS232_base
 	   clr.w	 _drive		;1.Partition
 	   bsr	     _FindVolume
        bne.s     start3
@@ -111,10 +111,13 @@ start5
 			bsr		_LoadFile2
 			beq.s     start4
 
-			jsr debug_dump_rom
-
+;			jsr debug_dump_rom
+			lea		msg_start_osd,a0
+			bsr		put_msg
 			jmp		$2000
 start4     move.w  #$60fe,$2000
+			lea		msg_start_osd,a0
+			bsr		put_msg
 
 			jmp		$2000
 
@@ -303,7 +306,7 @@ cmd_wr9		move.w	(a1),d0
 			cmp.b	#$ff,d0
 			beq		cmd_wr10
 cmd_wr11
-	move.b	#'*',RS232_base
+;	move.b	#'*',RS232_base
 ;	move.b	d0,RS232_base
 			or.b	d0,d0
 			rts					;If d0=$FF => Timeout
@@ -380,6 +383,7 @@ msg_reset_fail       dc.b "Reset failure"	    ,$d,$a,0
 msg_cmdtimeout_Error dc.b "Command Timeout_Error"	    ,$d,$a,0
 msg_timeout_Error    dc.b "Timeout_Error"	    ,$d,$a,0
 msg_SDHC             dc.b "SDHC found "	    ,$d,$a,0
+msg_start_osd         dc.b "Start OSD"	    ,$d,$a,0
 
 
 spi_init    move.w	#-1,SDHCtype
@@ -508,7 +512,7 @@ put_msg3	move.l		(a7)+,a0
 			rts
 
 ; For some reason the buffer didn't work without declaring the block
-_secbuf  ds.b 512
+;_secbuf  ds.b 512
 
 cluster				ds.b	4	;$00		; 32-bit clusters
 part_fat			ds.b	4	;$04		; 32-bit start of fat
@@ -555,14 +559,14 @@ _FindVolume:
 ;		bsr			_read_secbuf
 		bsr			cmd_read_sector ; read MBR, address in a0
 		bne.s 		_error
-	move.b		#'*',RS232_base
-	move.b		#'*',RS232_base
+;	move.b		#'*',RS232_base
+;	move.b		#'*',RS232_base
 
 		cmpi.b		#$55,$1fe(a0) ; Check partition signature '0x55AA'
 		bne.s		_error
 		cmpi.b		#$AA,$1ff(a0)
 		bne.s		_error
-	move.b		#'T',RS232_base
+;	move.b		#'T',RS232_base
 
 		move.w		_drive,d0
 		and.w		#$70,d0
@@ -572,7 +576,7 @@ _FindVolume:
 		lea			$1be(a0),a1	; Memory pointer to first partition in a1
 		adda.w		d0,a1
 
-		move.b		#'a',RS232_base
+;		move.b		#'a',RS232_base
 		bsr         dump_a1_debug
 
 ;		move.b		4(a1),d0
@@ -601,7 +605,7 @@ _FindVolume:
 ;		move.b		#'F',RS232_base
 		move.l		8(a1),d0		; LBA address
 
-		move.b		#'l',RS232_base
+;		move.b		#'l',RS232_base
 		bsr         dump_d0_debug
 
 		ror.w		#8,d0			; LBA to big-endian
@@ -626,7 +630,7 @@ _error:
 		rts
 
 ;@next:
-		move.b		#'X',RS232_base
+;		move.b		#'X',RS232_base
 ;		adda.w		#$10,a1
 ;		cmpa.l		#_secbuf+$1fe,a1
 ;		bne		@checktype
@@ -650,7 +654,7 @@ _testfat_2:
 		bne.s		_error
 		move.b		#32,_fstype
 _testfat_ex:
-		move.b		#'F',RS232_base
+;		move.b		#'F',RS232_base
 		move.l		$0a(a0),d0	; make sure sector size is 512
 		and.l		#$FFFF00,d0
 		cmpi.l		#$00200,d0
@@ -683,12 +687,12 @@ _testfat_ex:
 		ror.w		#8,d0
 		swap		d0
 		ror.w		#8,d0
-		move.b		#'1',RS232_base
+;		move.b		#'1',RS232_base
 _add_start32
 		add.l		d0,d1
 		subq.b		#1,$10(a0)
 		bne.s		_add_start32
-		move.b		#'2',RS232_base
+;		move.b		#'2',RS232_base
 		bra.s		subcluster
 
 _fat16
@@ -696,11 +700,11 @@ _fat16
 			move.l		d0,_rootcluster
 			move.w		$16(a0),d0				;Sectors per Fat
 			ror.w		#8,d0
-		move.b		#'1',RS232_base
+;		move.b		#'1',RS232_base
 root_sect	add.l		d0,d1
 			subi.b		#1,$10(a0);d2			;number of FAT Copies
 			bne			root_sect
-		move.b		#'2',RS232_base
+;		move.b		#'2',RS232_base
 ;			move.l		d1,_dirstart			;Root sector - LBA
 			move.l		d1,_rootsector
 	move.l	d1,d0
@@ -1003,29 +1007,29 @@ _temp_d1            ds.l    1   ;temp debug register for D1
 _temp_a0            ds.l    1   ;temp debug register for A0
 _temp_a1            ds.l    1   ;temp debug register for A0
 
-debug_dump_rom:
-			; DEBUG
-			move.b $8000,d0 ; Read to set trigger to
-			; 2 4-byte reads to see what data is retrieved.
-			move.l $2000,d0
-			bsr dump_d0_debug
-			move.l $2004,d0
-			bsr dump_d0_debug
-			move.l $2008,d0
-			bsr dump_d0_debug
-			move.l $200B,d0
-			bsr dump_d0_debug
-			move.l $2010,d0
-			bsr dump_d0_debug
-			move.l #$2e7c,$2000
-			move.l #0000,$2002
-			move.l $2000,d0
-			bsr dump_d0_debug
-			move.l $2004,d0
-			bsr dump_d0_debug
-			move.l $2008,d0
-			bsr dump_d0_debug
-			move.l $200B,d0
-			bsr dump_d0_debug
-			move.l $2010,d0
-			bsr dump_d0_debug
+; debug_dump_rom:
+; 			; DEBUG
+; 			move.b $18000,d0 ; Read to set trigger to
+; 			; 2 4-byte reads to see what data is retrieved.
+; 			move.l $2000,d0
+; 			bsr dump_d0_debug
+; 			move.l $2004,d0
+; 			bsr dump_d0_debug
+; 			move.l $2008,d0
+; 			bsr dump_d0_debug
+; 			move.l $200B,d0
+; 			bsr dump_d0_debug
+; 			move.l $2010,d0
+; 			bsr dump_d0_debug
+; 			move.l #$2e7c,$2000
+; 			move.l #0000,$2002
+; 			move.l $2000,d0
+; 			bsr dump_d0_debug
+; 			move.l $2004,d0
+; 			bsr dump_d0_debug
+; 			move.l $2008,d0
+; 			bsr dump_d0_debug
+; 			move.l $200B,d0
+; 			bsr dump_d0_debug
+; 			move.l $2010,d0
+; 			bsr dump_d0_debug
