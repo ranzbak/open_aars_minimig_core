@@ -422,8 +422,8 @@ mysdram : entity work.sdram
         sysclk => clk,
         reset_in => reset_n,
     
-        hostNWR => hostNWR,
         hostWR => hostWR,
+--        hostNWR => hostNWR,
         hostAddr => hostAddr,
         hostState => hostState,
         hostL => hostL,
