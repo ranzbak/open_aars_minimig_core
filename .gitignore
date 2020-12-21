@@ -7,6 +7,17 @@ vivado_*
 *.o
 xvhdl.log
 
-# OSDLoad
+# OSDLoad build products
 OSDBoot_68K/*.bin
 OSDBoot_68K/*.vhd
+
+# debug folder
+debug/*
+
+# Cache files and folders
+*.cache
+.hdl_checker/*
+.xvhdl.init/*
+xvhdl.pb
+cache.json
+.xvhdl.init
