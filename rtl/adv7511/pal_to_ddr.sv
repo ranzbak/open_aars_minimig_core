@@ -112,7 +112,7 @@ module pal_to_ddr(
         .i_hd_hsync(o_hsync),
         .i_hd_vsync(o_vsync),
         .i_hd_clk(w_adv_clk),
-        .i_hd_four_three(1'b1)
+        .i_hd_four_three(1'b0)
     );
     
     // Convert the generated output data into video out signals

@@ -42,20 +42,22 @@ module pal_to_hd_upsample(
     input           i_hd_four_three     // Display content as 4:3 (1) instead of 16:9 (0)
 );
     // constants
+    parameter OFFSET_HZ = 60; // Number of pixels the display should be moved to the left
     parameter HD_H_RES = 1280;  // Resolution of the output signal
     parameter HD_H_FP = 0;      // Horizontal front porge, move image to the right
     parameter HD_FT_BAR = 160;  // The width of the bar before and after the active area when in 4:3 mode
     parameter PAL_H_FP = 32;    
 
     // Output registers
+    (* mark_debug = "true", keep = "true" *)
     reg [7:0]   r_hd_r;
+    (* mark_debug = "true", keep = "true" *)
     reg [7:0]   r_hd_g;
+    (* mark_debug = "true", keep = "true" *)
     reg [7:0]   r_hd_b;
 
-    (* mark_debug = "true", keep = "true" *)
     reg   [1:0] r_cur_read_buf  = 2'b00;  // Number of the current read buffer
-    (* mark_debug = "true", keep = "true" *)
-    reg   [1:0] r_cur_write_buf = 2'b11;  // Number of the current write buffer
+    reg   [1:0] r_cur_write_buf = 2'b00;  // Number of the current write buffer
     (* mark_debug = "true", keep = "true" *)
     reg         r_next_buf      = 1'b0;  // signal when to swap buffer
 
@@ -68,8 +70,10 @@ module pal_to_hd_upsample(
     // Buffer to hold 2 lines of data
     reg         r_ena;
     reg         r_wea;
+    (* mark_debug = "true", keep = "true" *)
     reg  [12:0] r_addra = 0;
     reg  [23:0] r_dina;
+    (* mark_debug = "true", keep = "true" *)
     reg  [12:0] r_addrb = 0;
     wire [23:0] w_doutb;
 
@@ -139,6 +143,7 @@ module pal_to_hd_upsample(
 
     // Generate sample enable
     reg [3:0]   r_pix_clock_count = 4'b0;
+    (* mark_debug = "true", keep = "true" *)
     reg         r_pix_en = 1'b0;
     always @(posedge clk) begin
         if (r_line_active) begin
@@ -157,9 +162,18 @@ module pal_to_hd_upsample(
     // Sample PAL input stream
     reg         r_hd_clk_;
     reg [11:0]  r_h_pos = 12'b0;
-    reg [2:0]   r_stage = 1'b0;
     always @(posedge clk) begin
         r_pal_hsync_ <= i_pal_hsync;
+
+        // write the pixel
+        r_wea <= 1'b0;
+        r_ena <= 1'b1;
+        if (r_pix_en && ~i_pal_hsync) begin
+            r_addra <= r_addra+1;
+            r_wea <= 1'b1;
+            //r_ena <= 1'b1;
+            r_dina <= {i_pal_b, i_pal_g, i_pal_r};
+        end
 
         // End of input line
         if (r_pal_hsync_ == 1'b1 && i_pal_hsync == 1'b0) begin
@@ -175,24 +189,14 @@ module pal_to_hd_upsample(
             // Switch the current write buffer
             case (r_cur_write_buf)
                 0:
-                    r_addra <= 13'b0;
+                    r_addra <= 13'b0000;
                 1:
-                    r_addra <= 13'h800;
+                    r_addra <= 13'h0800;
                 2:
                     r_addra <= 13'h1000;
                 3:  
                     r_addra <= 13'h1800;
             endcase;
-        end
-
-        // write the pixel
-        r_wea <= 1'b0;
-        r_ena <= 1'b1;
-        if (r_pix_en && ~i_pal_hsync) begin
-            r_addra <= r_addra+1;
-            r_wea <= 1'b1;
-            //r_ena <= 1'b1;
-            r_dina <= {i_pal_b, i_pal_g, i_pal_r};
         end
 
         // read from buffer
@@ -201,18 +205,6 @@ module pal_to_hd_upsample(
             if (r_hd_clk_ == 1'b1 && i_hd_clk == 1'b0 && ~i_hd_hsync) begin
                 r_h_pos <= r_h_pos + 1;
                 if (r_h_pos > HD_FT_BAR && r_h_pos < (HD_H_RES-HD_FT_BAR)) begin
-                    r_stage <= r_stage + 1;
-                    if(r_stage == 2) begin
-                        r_stage <= 0;
-                    end
-                    // case (r_stage)
-                    //     3'd0: begin
-                    //         r_addrb <= r_addrb+2;
-                    //     end
-                    //     default: begin
-                    //         r_addrb <= r_addrb+1;
-                    //     end
-                    // endcase
                     r_addrb <= r_addrb+1;
                     r_hd_r <= w_doutb[0 +: 8];
                     r_hd_g <= w_doutb[8 +: 8];
@@ -254,13 +246,13 @@ module pal_to_hd_upsample(
             r_h_pos <= 0; // Reset horizontal counter
             case (r_cur_read_buf)
                 0:
-                    r_addrb <= 13'b0;
+                    r_addrb <= 13'b0000 + OFFSET_HZ;
                 1:
-                    r_addrb <= 13'h800;
+                    r_addrb <= 13'h0800 + OFFSET_HZ;
                 2:
-                    r_addrb <= 13'h1000;
+                    r_addrb <= 13'h1000 + OFFSET_HZ;
                 3:
-                    r_addrb <= 13'h1800;
+                    r_addrb <= 13'h1800 + OFFSET_HZ;
             endcase;
         end
     end
