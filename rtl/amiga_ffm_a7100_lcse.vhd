@@ -144,7 +144,8 @@ architecture struct of amiga_ffm_a7100 is
 --  signal dvi_hsync   : std_logic := '0';
 --  signal dvi_vsync   : std_logic := '0';
 
-  signal clk_dvi, clk140m, clk281m: std_logic := '0';
+--  signal clk_dvi, clk200m, clk281m: std_logic := '0';
+  signal clk200m: std_logic := '0';
 
 --  signal temp_we : std_logic := '0';
   signal diskoff : std_logic;
@@ -165,8 +166,8 @@ architecture struct of amiga_ffm_a7100 is
 --  signal S_spdif_out: std_logic;
 --  signal ddr_d: std_logic_vector(3 downto 0);
   signal dvid_crgb: std_logic_vector(7 downto 0); -- clock, red, green, blue
-  alias clk_pixel: std_logic is clk28m;
-  alias clk_pixel_shift: std_logic is clk_dvi;
+  --alias clk_pixel: std_logic is clk28m;
+  --alias clk_pixel_shift: std_logic is clk_dvi;
   -- end emard AV
   signal sw: std_logic_vector(3 downto 0) := (others => '1');
   -- LED assignments
@@ -215,8 +216,8 @@ begin
     clkout0_divide_f => 7.5,        --  112.5     MHz /7.5 divide
     clkout1_divide   => 120,        --  7.03125   MHz /120 divide
     clkout2_divide   => 30,         --  28.125    MHz /30 divide
-    clkout3_divide   => 6,          --  140.625   MHz /6 divide
-    clkout4_divide   => 3,          --  281.25    MHz /3 divide
+    -- clkout3_divide   => 4,          --  210,94    MHz /4.25 divide
+    -- clkout4_divide   => 3,          --  281.25    MHz /3 divide
     bandwidth        => "LOW"
   )
   port map
@@ -229,17 +230,17 @@ begin
     clkout0  => clk,                --  112.5     MHz
     clkout1  => clk7m,              --  7.03125   MHz
     clkout2  => clk28m,             --  28.125    MHz
-    clkout3  => clk140m,            --  140.625   MHz
-    clkout4  => clk281m,            --  281.25    MHz
+    -- clkout3  => clk200m,            --  210,94    MHz
+    -- clkout4  => clk281m,            --  281.25    MHz
     locked   => pll_locked_main
   );
 
-  G_clk_dvi_sdr: if not C_dvid_ddr generate
-    clk_dvi <= clk281m;
-  end generate;
-  G_clk_dvi_ddr: if C_dvid_ddr generate
-    clk_dvi <= clk140m;
-  end generate;
+  -- G_clk_dvi_sdr: if not C_dvid_ddr generate
+  --   clk_dvi <= clk281m;
+  -- end generate;
+  -- G_clk_dvi_ddr: if C_dvid_ddr generate
+  --   clk_dvi <= clk140m;
+  -- end generate;
 
   clk_sdram: mmcme2_base
   generic map
@@ -247,8 +248,10 @@ begin
     clkin1_period    => 8.88888888, --   112.5    MHz (8.88888 ns)
     clkfbout_mult_f  => 10.0,       --  1125.0    MHz *10 common multiply
     divclk_divide    => 1,          --  1125.0    MHz /1  common divide
-    clkout0_divide_f => 10.0,       --  112.5     MHz /10 divide
-    clkout0_phase    => 144.0,      --            deg phase shift (multiple of 45/clkout0_divide_f = 4.5)
+    clkout0_divide_f => 5.625,      --   200.0    MHz /10 divide
+    clkout0_phase    => 0.0,        --            deg phase shift (multiple of 45/clkout0_divide_f = 4.5)
+    clkout1_divide   => 10,         --   112.5    MHz /10 divide
+    clkout1_phase    => 144.0,      --            deg phase shift (multiple of 45/clkout0_divide_f = 4.5)
     bandwidth        => "LOW"
   )
   port map
@@ -258,7 +261,8 @@ begin
     clkin1   => clk,
     clkfbin  => clk_fb_sdram,
     clkfbout => clk_fb_sdram,
-    clkout0  => dr_clk,             --  112.5     MHz phase shifted
+    clkout0  => clk200m,             --  112.5     MHz phase shifted
+    clkout1  => dr_clk,             --  112.5     MHz phase shifted
     locked   => pll_locked_sdram
   );
 
@@ -386,40 +390,33 @@ begin
     right_chan => rightdatasum & '1'
   );
 
-  -- adv7513 routing
-  -- dv_clk <= clk_pixel;
-  -- dv_de <= not videoblank;
-  -- dv_hsync <= hsync;
-  -- dv_vsync <= vsync;
-  -- dv_d(23 downto 16) <= red_u;
-  -- dv_d(15 downto 8) <= green_u;
-  -- dv_d(7 downto 0) <= blue_u;
-
   -- Video signal to dual data rate
   -- To save pins on the FPGA
-  dv_ddr_send: entity work.adv_ddr
+  my_pal_to_ddr: entity work.pal_to_ddr
   port map
   (
-    clk_ddr => clk,
-    clk_pixel => clk_pixel,
-    videoblank => videoblank,
-    vsync => vsync,
-    hsync => hsync,
-    data => blue_u & green_u & red_u,
+    clk => clk200m,
+    i_pal_vsync => not vsync,
+    i_pal_hsync => not hsync,
+    i_pal_r => red_u,
+    i_pal_g => green_u,
+    i_pal_b => blue_u,
 
-    clk_pixel_out => dv_clk,
-    de_out => dv_de,
-    vsync_out => dv_vsync,
-    hsync_out => dv_hsync,
-    data_out => dv_d
+    o_clk_pixel => dv_clk,
+    o_de => dv_de,
+    o_vsync => dv_vsync,
+    o_hsync => dv_hsync,
+    o_data => dv_d
   );
 
   -- Module to configure the ADV7511
   i2c_send: entity work.i2c_sender
   port map
   (
-    clk => clk_pixel,
-    resend => reset,
+    clk => clk28m,
+    rst => reset,
+    resend => '0',
+    read_regs => '0',
     sioc => dv_scl,
     siod => dv_sda
   );

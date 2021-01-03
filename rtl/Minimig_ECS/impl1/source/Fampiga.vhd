@@ -238,18 +238,18 @@ signal cpu_reset1 : std_logic;
 -- DEBUG
 
 -- DEBUG CFIDE + SDRAM
-attribute mark_debug : string; 
-attribute mark_debug of hostAddr : signal is "true";
-attribute mark_debug of hostWR : signal is "true";
-attribute mark_debug of hostRD : signal is "true";
-attribute mark_debug of hostL : signal is "true";
-attribute mark_debug of hostU : signal is "true";
-attribute mark_debug of sdr_we : signal is "true";
-attribute mark_debug of sdr_cs : signal is "true";
-attribute mark_debug of hostena : signal is "true";
-attribute mark_debug of enaWRreg : signal is "true";
-attribute mark_debug of hostState : signal is "true";
-attribute mark_debug of hostData : signal is "true";
+-- attribute mark_debug : string; 
+-- attribute mark_debug of hostAddr : signal is "true";
+-- attribute mark_debug of hostWR : signal is "true";
+-- attribute mark_debug of hostRD : signal is "true";
+-- attribute mark_debug of hostL : signal is "true";
+-- attribute mark_debug of hostU : signal is "true";
+-- attribute mark_debug of sdr_we : signal is "true";
+-- attribute mark_debug of sdr_cs : signal is "true";
+-- attribute mark_debug of hostena : signal is "true";
+-- attribute mark_debug of enaWRreg : signal is "true";
+-- attribute mark_debug of hostState : signal is "true";
+-- attribute mark_debug of hostData : signal is "true";
 -- DEBUG
 
 
