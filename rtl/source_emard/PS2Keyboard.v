@@ -70,16 +70,22 @@ module ps2keyboard
 );
 
 //local signals
+(* mark_debug = "true", keep = "true" *)
 reg		pclkout; 				//ps2 clk out
+(* mark_debug = "true", keep = "true" *)
 wire	pdatout;				//ps2 data out
+(* mark_debug = "true", keep = "true" *)
 wire	pclkneg;				//negative edge of ps2 clock strobe
 reg		pdatb,pclkb,pclkc;		//input synchronization	
 
 reg		[11:0] preceive;		//ps2 receive register
+(* mark_debug = "true", keep = "true" *)
 reg		[11:0] psend;			//ps2 send register
-reg		[19:0] ptimer;			//ps2 timer
+reg		[19:0] ptimer = 0;			//ps2 timer
+(* mark_debug = "true", keep = "true" *)
 reg		[2:0] kstate = 5;		//keyboard controller current state
-reg		[2:0] knext;			//keyboard controller next state
+(* mark_debug = "true", keep = "true" *)
+reg		[2:0] knext = 5;			//keyboard controller next state
 reg		capslock;				//capslock status
 wire	numlock;
 
@@ -125,9 +131,9 @@ assign prbusy = ~preceive[11];
 //PS2 timer
 always @(posedge clk)
 	if (ptreset)
-		ptimer[19:0] <= 0;
-	else if (!pto2)
-		ptimer[19:0] <= ptimer[19:0] + 1;
+		ptimer <= 0;
+	else  if (!pto2)
+		ptimer <= ptimer + 1;
 		
 assign pto1 = ptimer[15];//4.6ms @ 7.09Mhz
 assign pto2 = ptimer[19];//74ms @ 7.09Mhz
@@ -135,11 +141,11 @@ assign pto2 = ptimer[19];//74ms @ 7.09Mhz
 //PS2 send shifter
 always @(posedge clk)
 	if (psled1)
-		psend[11:0] <= 12'b111111011010;//$ED
+		psend <= 12'b111111011010;//$ED
 	else if (psled2)
-		psend[11:0] <= {2'b11,~(capslock^numlock^ledb),5'b00000,capslock,numlock,ledb,1'b0};//led status
+		psend <= {2'b11,~(capslock^numlock^ledb),5'b00000,capslock,numlock,ledb,1'b0};//led status
 	else if (!psready && pclkneg)
-		psend[11:0] <= {1'b0,psend[11:1]};
+		psend <= {1'b0,psend[11:1]};
 		
 assign psready = (psend[11:0]==12'b000000000001) ? 1 : 0;
 assign pdatout = psend[0];

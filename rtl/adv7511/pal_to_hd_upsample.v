@@ -42,23 +42,20 @@ module pal_to_hd_upsample(
     input           i_hd_four_three     // Display content as 4:3 (1) instead of 16:9 (0)
 );
     // constants
-    parameter OFFSET_HZ = 60; // Number of pixels the display should be moved to the left
-    parameter HD_H_RES = 1280;  // Resolution of the output signal
-    parameter HD_H_FP = 0;      // Horizontal front porge, move image to the right
+    parameter OFFSET_HZ = 60;   // Number of pixels offset to center the screen horizontally (Higher is more to the left)
+    parameter OFFSET_VT = 10;   // Number of Lines to center the screen vertically (NOT IMPLEMENTED YET)
+    parameter HD_H_RES  = 1280; // Resolution of the output signal
+    parameter HD_H_FP   = 0;    // Horizontal front porge, move image to the right
     parameter HD_FT_BAR = 160;  // The width of the bar before and after the active area when in 4:3 mode
-    parameter PAL_H_FP = 32;    
+    parameter PAL_H_FP  = 32;    
 
     // Output registers
-    (* mark_debug = "true", keep = "true" *)
     reg [7:0]   r_hd_r;
-    (* mark_debug = "true", keep = "true" *)
     reg [7:0]   r_hd_g;
-    (* mark_debug = "true", keep = "true" *)
     reg [7:0]   r_hd_b;
 
     reg   [1:0] r_cur_read_buf  = 2'b00;  // Number of the current read buffer
     reg   [1:0] r_cur_write_buf = 2'b00;  // Number of the current write buffer
-    (* mark_debug = "true", keep = "true" *)
     reg         r_next_buf      = 1'b0;  // signal when to swap buffer
 
     reg         r_pal_hsync_;
@@ -70,10 +67,8 @@ module pal_to_hd_upsample(
     // Buffer to hold 2 lines of data
     reg         r_ena;
     reg         r_wea;
-    (* mark_debug = "true", keep = "true" *)
     reg  [12:0] r_addra = 0;
     reg  [23:0] r_dina;
-    (* mark_debug = "true", keep = "true" *)
     reg  [12:0] r_addrb = 0;
     wire [23:0] w_doutb;
 
@@ -108,7 +103,6 @@ module pal_to_hd_upsample(
     reg [13:0]  r_line_count = 14'b0;
     reg [3:0]   r_pix_clock_dev = 4'd0;
     reg [13:0]  r_pal_h_pos = 14'b0;
-    (* mark_debug = "true", keep = "true" *)
     reg [13:0]  v_div_var = 14'b0;
     always @(posedge clk) begin
         // start of the horizontal line
@@ -143,7 +137,6 @@ module pal_to_hd_upsample(
 
     // Generate sample enable
     reg [3:0]   r_pix_clock_count = 4'b0;
-    (* mark_debug = "true", keep = "true" *)
     reg         r_pix_en = 1'b0;
     always @(posedge clk) begin
         if (r_line_active) begin

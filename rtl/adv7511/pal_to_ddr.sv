@@ -60,19 +60,14 @@ module pal_to_ddr(
 
 
     reg _i_pal_hsync;
-    (* mark_debug = "true", keep = "true" *)
     reg __i_pal_hsync;
     reg _i_pal_vsync;
-    (* mark_debug = "true", keep = "true" *)
     reg __i_pal_vsync;
     reg [7:0] _i_pal_r;
-    (* mark_debug = "true", keep = "true" *)
     reg [7:0] __i_pal_r;
     reg [7:0] _i_pal_g;
-    (* mark_debug = "true", keep = "true" *)
     reg [7:0] __i_pal_g;
     reg [7:0] _i_pal_b;
-    (* mark_debug = "true", keep = "true" *)
     reg [7:0] __i_pal_b;
 
     // Synchronize the signal

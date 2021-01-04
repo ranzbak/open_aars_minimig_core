@@ -40,14 +40,14 @@ port(
         n_15khz     : in std_logic;
  
         -- PS/2
-        ps2k_clk_in : inout std_logic;
-        ps2k_clk_out : inout std_logic;
-        ps2k_dat_in : inout std_logic;
-        ps2k_dat_out : inout std_logic;
-        ps2m_clk_in : inout std_logic;
-        ps2m_clk_out : inout std_logic;
-        ps2m_dat_in : inout std_logic;
-        ps2m_dat_out : inout std_logic;
+        ps2k_clk_in : in std_logic;
+        ps2k_clk_out : out std_logic;
+        ps2k_dat_in : in std_logic;
+        ps2k_dat_out : out std_logic;
+        ps2m_clk_in : in std_logic;
+        ps2m_clk_out : out std_logic;
+        ps2m_dat_in : in std_logic;
+        ps2m_dat_out : out std_logic;
         
         -- Audio
         sigmaL : out std_logic;
