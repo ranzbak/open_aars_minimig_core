@@ -22,7 +22,9 @@ module mcp23s17_input (
   output wire           ready,  // Goes high when the MCP23S17 is configured
 
   // Joystick I/O
+(* mark_debug = "true", keep = "true" *)
   output reg  [  5:0]   joya,   // Joystick 1 output
+(* mark_debug = "true", keep = "true" *)
   output reg  [  5:0]   joyb    // Joystick 2 output
 );
 
@@ -346,11 +348,12 @@ end
     
 // Byte to pin mapping
 // Connects the received values to the Joystick pinout of the Amiga
-// 7  6  5       4     3   2     1     0
-// 1, 1, Fire 2, Fire, Up, Down, Left, right
+// 7  6  5       4      3    2      1      0
+// 1, 1, Fire 2, Fire , Up, Down, Left, Right
+//
 always @(posedge clk) begin
-    joya <= { joya_raw[5], joya_raw[4], joya_raw[3], joya_raw[2], joya_raw[1], joya_raw[0] }; // Joystick A mapping
-    joyb <= { joyb_raw[1], joyb_raw[2], joyb_raw[3], joyb_raw[4], joyb_raw[5], joyb_raw[6] }; // Joystick B mapping
+    joya <= { joya_raw[6], joya_raw[2], joya_raw[1], joya_raw[3], joya_raw[4], joya_raw[5] }; // Joystick A mapping
+    joyb <= { joyb_raw[2], joyb_raw[6], joyb_raw[7], joyb_raw[5], joyb_raw[4], joyb_raw[3] }; // Joystick B mapping
 end
 
 endmodule
