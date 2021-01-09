@@ -22,9 +22,7 @@ module mcp23s17_input (
   output wire           ready,  // Goes high when the MCP23S17 is configured
 
   // Joystick I/O
-(* mark_debug = "true", keep = "true" *)
   output reg  [  5:0]   joya,   // Joystick 1 output
-(* mark_debug = "true", keep = "true" *)
   output reg  [  5:0]   joyb    // Joystick 2 output
 );
 
