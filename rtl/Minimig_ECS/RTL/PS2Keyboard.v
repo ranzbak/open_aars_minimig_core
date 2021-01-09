@@ -72,25 +72,25 @@ module ps2keyboard
 //local signals
 reg		pclkout; 				//ps2 clk out
 wire	pdatout;				//ps2 data out
-wire	pclkneg;				//negative edge of ps2 clock strobe
+reg  	pclkneg;				//negative edge of ps2 clock strobe
 reg		pdatb,pclkb,pclkc;		//input synchronization	
 
 reg		[11:0] preceive;		//ps2 receive register
 reg		[11:0] psend;			//ps2 send register
 reg		[19:0] ptimer;			//ps2 timer
 reg		[2:0] kstate;			//keyboard controller current state
-reg		[2:0] knext;			//keyboard controller next state
+//reg		[2:0] knext;			//keyboard controller next state
 reg		capslock;				//capslock status
 wire	numlock;
 
 reg		prreset;				//ps2 receive reset
-wire	prbusy;					//ps2 receive busy
+wire 	prbusy;					//ps2 receive busy
 reg		ptreset;				//ps2 reset timer
-wire	pto1;					//ps2 timer timeout 1 
-wire	pto2;					//ps2 timer timeout 2
+reg 	pto1;					//ps2 timer timeout 1
+reg 	pto2;					//ps2 timer timeout 2
 reg		psled1;					//ps2 send led code 1
 reg		psled2;					//ps2 send led code 2
-wire	psready;				//ps2 send ready
+reg 	psready;				//ps2 send ready
 wire	valid;					//valid amiga key code at keymap output
 
 //bidirectional open collector IO buffers
@@ -105,159 +105,149 @@ begin
 	pdatb <= ps2kdat;
 	pclkb <= ps2kclk;
 	pclkc <= pclkb;
+
+	//detect ps2 clock negative edge
+	pclkneg <= 1'b0;
+	if (pclkc && ~pclkb) begin
+		pclkneg <= 1'b1;
+	end
 end						
 
-//detect ps2 clock negative edge
-assign pclkneg = pclkc & ~pclkb;
 
 //PS2 input shifter
 wire prready;
+assign prready = ~preceive[0];
+assign prbusy = ~preceive[11];
 
-always @(posedge clk)
+always @(posedge clk) begin
 	if (prreset  ||  prready)
 		preceive[11:0] <= 12'b111111111111;
 	else if (pclkneg)
 		preceive[11:0] <= {1'b0,pdatb,preceive[10:1]};
+end
 		
-assign prready = ~preceive[0];
-assign prbusy = ~preceive[11];
 
 //PS2 timer
-always @(posedge clk)
+always @(posedge clk) begin
+	if (!pto2)
+		ptimer[19:0] <= ptimer[19:0] + 1;
 	if (ptreset)
 		ptimer[19:0] <= 0;
-	else if (!pto2)
-		ptimer[19:0] <= ptimer[19:0] + 1;
 		
-assign pto1 = ptimer[15];//4.6ms @ 7.09Mhz
-assign pto2 = ptimer[19];//74ms @ 7.09Mhz
+	pto1 <= ptimer[15];//4.6ms @ 7.09Mhz
+	pto2 <= ptimer[19];//74ms @ 7.09Mhz
+end
 
 //PS2 send shifter
-always @(posedge clk)
+always @(posedge clk) begin
+	if (!psready && pclkneg)
+		psend[11:0] <= {1'b0,psend[11:1]};
+	if (psled2)
+		psend[11:0] <= {2'b11,~(capslock^numlock^ledb),5'b00000,capslock,numlock,ledb,1'b0};//led status
 	if (psled1)
 		psend[11:0] <= 12'b111111011010;//$ED
-	else if (psled2)
-		psend[11:0] <= {2'b11,~(capslock^numlock^ledb),5'b00000,capslock,numlock,ledb,1'b0};//led status
-	else if (!psready && pclkneg)
-		psend[11:0] <= {1'b0,psend[11:1]};
 		
-assign psready = (psend[11:0]==12'b000000000001) ? 1 : 0;
+	psready <= (psend[11:0]==12'b000000000001) ? 1 : 0;
+end
 assign pdatout = psend[0];
 
-//keyboard state machine
+//always @(kstate or pto1 or pto2 or psready or prready or prbusy or keystrobe or keyack)
 always @(posedge clk)
-	if (reset)//master reset
-		kstate <= 0;
-	else 
-		kstate <= knext;
-		
-always @(kstate or pto1 or pto2 or psready or prready or prbusy or keystrobe or keyack)
 begin
+	//keyboard state machine
+
 	case(kstate)
 		0://reset timer
 			begin
-				prreset = 1;
-				ptreset = 1;
-				pclkout = 0;
-				psled1 = 0;
-				psled2 = 0;
+				prreset <= 1;
+				ptreset <= 1;
+				pclkout <= 0;
+				psled1 <= 0;
+				psled2 <= 0;
 				
-				knext = 1;
+				kstate <= 1;
 			end
 		1://"request-to-send" for led1 code  
 			begin
-				prreset = 1;
-				ptreset = 0;
-				pclkout = 0;
-				psled1 = 1;
-				psled2 = 0;
+				prreset <= 1;
+				ptreset <= 0;
+				pclkout <= 0;
+				psled1 <= 1;
+				psled2 <= 0;
 				
 				if (pto1)
-					knext = 2;
-				else
-					knext = 1;
+					kstate <= 2;
 			end
 		2://wait for led1 code to be sent and acknowledge received
 			begin
-				prreset = ~psready;
-				ptreset = 1;
-				pclkout = 1;
-				psled1 = 0;
-				psled2 = 0;
+				prreset <= ~psready;
+				ptreset <= 1;
+				pclkout <= 1;
+				psled1 <= 0;
+				psled2 <= 0;
 				
 				if (prready)
-					knext = 3;
-				else
-					knext = 2;
+					kstate <= 3;
 			end
 		3://"request-to-send" for led2 code
 			begin
-				prreset = 1;
-				ptreset = 0;
-				pclkout = 0;
-				psled1 = 0;
-				psled2 = 1;
+				prreset <= 1;
+				ptreset <= 0;
+				pclkout <= 0;
+				psled1 <= 0;
+				psled2 <= 1;
 				
 				if (pto1)
-					knext = 4;
-				else
-					knext = 3;
+					kstate <= 4;
 			end
 		4://wait for led2 code to be sent
 			begin
-				prreset = ~psready;
-				ptreset = 1;
-				pclkout = 1;
-				psled1 = 0;
-				psled2 = 0;
+				prreset <= ~psready;
+				ptreset <= 1;
+				pclkout <= 1;
+				psled1 <= 0;
+				psled2 <= 0;
 				
 				if (prready)
-					knext = 5;
-				else
-					knext = 4;
+					kstate <= 5;
 			end
-
-
 		5://wait for valid amiga key code
 			begin
-				prreset = 0;
-				ptreset = keystrobe;
-				pclkout = 1;
-				psled1 = 0;
-				psled2 = 0;
+				prreset <= 0;
+				ptreset <= keystrobe;
+				pclkout <= 1;
+				psled1 <= 0;
+				psled2 <= 0;
 				if (keystrobe)//valid amiga key decoded
-					knext = 6;
+					kstate <= 6;
 				else if (!prbusy && pto2)//timeout, update leds
-					knext = 0;
-				else//stay here
-					knext = 5;
+					kstate <= 0;
  			end
 
 		6://hold of ps2 keyboard and wait for keyack or timeout
 			begin
-				prreset = 0;
-				ptreset = keyack;
-				pclkout = 0;
-				psled1 = 0;
-				psled2 = 0;
+				prreset <= 0;
+				ptreset <= keyack;
+				pclkout <= 0;
+				psled1 <= 0;
+				psled2 <= 0;
 				if (keyack  ||  pto2)//keyack or timeout
-					knext = 5;
-				else//stay here
-					knext = 6;
+					kstate <= 5;
  			end
 
 		default://we should never come here
 			begin
-				prreset = 0;//ps2 receiver reset
-				ptreset = 0;//ps2 timer reset
-				pclkout = 1;//ps2 clock override
-				psled1 = 0;//ps2 send led code 1
-				psled2 = 0;//ps2 send led code 2
+				prreset <= 0;//ps2 receiver reset
+				ptreset <= 0;//ps2 timer reset
+				pclkout <= 1;//ps2 clock override
+				psled1 <= 0;//ps2 send led code 1
+				psled2 <= 0;//ps2 send led code 2
 
-				knext = 0;//go to reset state
+				kstate <= 0;//go to reset state
  			end
-
 	endcase
+	if (reset)//master reset
+		kstate <= 0;
 end
 
 //instantiate keymap to convert ps2 scan codes to amiga raw key codes
@@ -299,15 +289,16 @@ ps2keyboardmap km1
 wire keyequal;
 reg [7:0]keydat2;
 
-assign keyequal = keydat2[6:0]==keydat[6:0] ? 1 : 0;//detect if latched key equals new key
 //latch last key downstroke event
-always @(posedge clk)
-	if (reset)
+always @(posedge clk) begin 
+	if (valid && keydat[7] && keyequal)//upstroke event for latched key received
+		keydat2[7:0] <= keydat[7:0];
+	if (valid && !keydat[7])//latch downstroke event for last key pressed
+		keydat2[7:0] <= keydat[7:0];
+		if (reset)
 		keydat2[7:0] <= 0;
-	else if (valid && !keydat[7])//latch downstroke event for last key pressed
-		keydat2[7:0] <= keydat[7:0];
-	else if (valid && keydat[7] && keyequal)//upstroke event for latched key received
-		keydat2[7:0] <= keydat[7:0];
+end
+assign keyequal = keydat2[6:0]==keydat[6:0] ? 1 : 0;//detect if latched key equals new key
 
 //toggle capslock status on capslock downstroke event
 always @(posedge clk)
@@ -319,15 +310,15 @@ always @(posedge clk)
 assign aflock = capslock;
 
 //generate keystrobe to indicate valid keycode				
-always @(capslock or caps or keyequal or keydat or keydat2 or valid)
+always @(posedge clk) 
 	if (capslock && caps)//filter out capslock downstroke && capslock upstroke events if capslock is set
-		keystrobe = 0;
+		keystrobe <= 0;
 	else if (keyequal && (keydat[7]==keydat2[7]))//filter out duplicate events
-		keystrobe = 0;
+		keystrobe <= 0;
 	else if (valid)//valid amiga keycode, assert strobe
-		keystrobe = 1;
+		keystrobe <= 1;
 	else
-		keystrobe = 0;
+		keystrobe <= 0;
 
 //Keyboard reset detector. 
 //Reset is accomplished by holding down the
