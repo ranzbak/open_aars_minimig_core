@@ -42,7 +42,7 @@ module pal_to_hd_upsample(
     input           i_hd_four_three     // Display content as 4:3 (1) instead of 16:9 (0)
 );
     // constants
-    parameter OFFSET_HZ = 60;   // Number of pixels offset to center the screen horizontally (Higher is more to the left)
+    parameter OFFSET_HZ = 0;    // Number of pixels offset to center the screen horizontally (Higher is more to the left)
     parameter OFFSET_VT = 10;   // Number of Lines to center the screen vertically (NOT IMPLEMENTED YET)
     parameter HD_H_RES  = 1280; // Resolution of the output signal
     parameter HD_H_FP   = 0;    // Horizontal front porge, move image to the right
@@ -101,7 +101,7 @@ module pal_to_hd_upsample(
     reg         r_line_active = 1'b0;
     reg         r_act_active = 1'b0;
     reg [13:0]  r_line_count = 14'b0;
-    reg [3:0]   r_pix_clock_dev = 4'd0;
+    reg [5:0]   r_pix_clock_dev = 6'd0;
     reg [13:0]  r_pal_h_pos = 14'b0;
     reg [13:0]  v_div_var = 14'b0;
     always @(posedge clk) begin
@@ -116,8 +116,8 @@ module pal_to_hd_upsample(
             r_line_count    <= 0;  // Reset counter
             // Detect the sample time per line
             //if(r_pix_clock_dev == 0) begin
-                v_div_var        = (r_line_count / HD_H_RES) - 1;
-                r_pix_clock_dev <= v_div_var[3:0]; // Get the pixel clock relative to the system clock
+                v_div_var        = ({r_line_count, 2'b0} / HD_H_RES) - 1;
+                r_pix_clock_dev <= v_div_var[5:0]; // Get the pixel clock relative to the system clock
             //end
         end
 
@@ -136,15 +136,15 @@ module pal_to_hd_upsample(
     end
 
     // Generate sample enable
-    reg [3:0]   r_pix_clock_count = 4'b0;
+    reg [5:0]   r_pix_clock_count = 6'b0;
     reg         r_pix_en = 1'b0;
     always @(posedge clk) begin
         if (r_line_active) begin
-            r_pix_clock_count <= r_pix_clock_count + 1;
+            r_pix_clock_count <= r_pix_clock_count + 3'b100;
 
             r_pix_en <= 1'b0;
-            if (r_pix_clock_count == r_pix_clock_dev) begin
-                r_pix_clock_count <= 0;
+            if (r_pix_clock_count >= r_pix_clock_dev) begin
+                r_pix_clock_count <= r_pix_clock_count - r_pix_clock_dev;
                 r_pix_en <= 1'b1;
             end
         end else begin
