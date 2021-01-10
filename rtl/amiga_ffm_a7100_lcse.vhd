@@ -195,17 +195,15 @@ begin
   -- PS/2 Keyboard and Mouse definitions
   ps2k_dat_in<=ps2_data1;
   ps2_data1 <= '0' when (ps2k_dat_out='0') else 'Z';
-  --ps2_data1 <= 'Z';
   ps2k_clk_in<=ps2_clk1;
   ps2_clk1 <= '0' when (ps2k_clk_out='0') else 'Z';
-  --ps2_clk1 <= 'Z';
 
   ps2m_dat_in<=ps2_data2;
-  ps2_data2 <= '0' when (ps2m_dat_out='0') else 'Z';
-  -- PS2_data2 <= 'Z';
+  -- ps2_data2 <= '0' when (ps2m_dat_out='0') else 'Z';
+  PS2_data2 <= 'Z';
   ps2m_clk_in<=ps2_clk2;
-  ps2_clk2 <= '0' when (ps2m_clk_out='0') else 'Z';
-  -- PS2_clk2 <= 'Z';
+  -- ps2_clk2 <= '0' when (ps2m_clk_out='0') else 'Z';
+  ps2_clk2 <= 'Z';
 
   --clkin_ibufgds: ibufgds
   --port map (I => clk_100MHz_P, IB => clk_100MHz_N, O => clk_100MHz);

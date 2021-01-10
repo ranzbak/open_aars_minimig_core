@@ -24,7 +24,7 @@
  */
 
 module i2s_tx #(
-	parameter CLK_DIV = 50,
+	parameter CLK_DIV = 73, // 48kHz sound
 	parameter AUDIO_DW	= 16
 )(
 	input			clk,

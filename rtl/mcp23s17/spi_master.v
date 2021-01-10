@@ -32,7 +32,7 @@
 
 module SPI_Master
   #(parameter SPI_MODE = 0,
-    parameter CLKS_PER_HALF_BIT = 2)
+    parameter CLKS_PER_HALF_BIT = 1) // More samples might fix the mouse
   (
    // Control/Data Signals,
    input        i_Rst_L,     // FPGA Reset

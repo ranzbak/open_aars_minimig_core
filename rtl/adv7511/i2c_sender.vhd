@@ -30,7 +30,7 @@ end i2c_sender;
 architecture behave of work.i2c_sender is
     -- this value gives nearly 200ms cycles before the first register is written
    signal   address           : std_logic_vector(7 downto 0)  := (others => '0');
-   signal   reg_value         : std_logic_vector(15 downto 0)  := (others => '0');
+   signal   reg_value         : std_logic_vector(23 downto 0)  := (others => '0');
 
    -- Command
    signal cmd_read : std_logic;
@@ -90,50 +90,67 @@ architecture behave of work.i2c_sender is
 
    type T_writereg is
    record
-     reg, val: std_logic_vector(7 downto 0);
+     addr, reg, val: std_logic_vector(7 downto 0);
    end record;
-   type T_init_sequence is array(0 to 30) of T_writereg;
+   type T_init_sequence is array(0 to 40) of T_writereg;
    constant C_init_sequence: T_init_sequence :=
    (
+     ---------------------
+     -- ADV7511 Video out
+     ---------------------
      -- Power cycle
-     (reg => x"41", val => x"40"), --  7 Power Down
-     (reg => x"41", val => x"10"), --  7 Power Up
-     --(reg => x"d6", val => x"c0"), --  Force HPD high (Power on)
+     (addr => x"72", reg => x"41", val => x"40"), --  7 Power Down
+     (addr => x"72", reg => x"41", val => x"10"), --  7 Power Up
+     --(addr => x"ff", reg => x"d6", val => x"c0"), --  Force HPD high (Power on)
      -- Setup mandatory registers
-     (reg => x"98", val => x"03"), -- ADI required Write
-     (reg => x"99", val => x"02"), -- ADI required Write
-     (reg => x"9a", val => x"e0"), -- ADI required Write
-     (reg => x"9c", val => x"30"), -- ADI required Write
-     (reg => x"9d", val => x"01"), -- ADI required Write
-     (reg => x"a2", val => x"a4"), -- ADI required Write
-     (reg => x"a3", val => x"a4"), -- ADI required Write
-     (reg => x"e0", val => x"d0"), -- ADI required Write
-     (reg => x"f9", val => x"00"), -- ADI required Write
-     (reg => x"d0", val => x"3e"), -- ADI required Write
+     (addr => x"72", reg => x"98", val => x"03"), -- ADI required Write
+     (addr => x"72", reg => x"99", val => x"02"), -- ADI required Write
+     (addr => x"72", reg => x"9a", val => x"e0"), -- ADI required Write
+     (addr => x"72", reg => x"9c", val => x"30"), -- ADI required Write
+     (addr => x"72", reg => x"9d", val => x"01"), -- ADI required Write
+     (addr => x"72", reg => x"a2", val => x"a4"), -- ADI required Write
+     (addr => x"72", reg => x"a3", val => x"a4"), -- ADI required Write
+     (addr => x"72", reg => x"e0", val => x"d0"), -- ADI required Write
+     (addr => x"72", reg => x"f9", val => x"00"), -- ADI required Write
+     (addr => x"72", reg => x"d0", val => x"3e"), -- ADI required Write
      -- Setup video input mode
-     (reg => x"48", val => x"20"), -- DDR alignment [35:24]
-     (reg => x"15", val => x"05"), -- Input 444 (RGB or YCrCb) with Separate Syncs DDR
-     (reg => x"16", val => x"38"), -- 8 bit, style 1, falling edge
-     (reg => x"17", val => x"02"), -- 12 bit, style 1, falling edge
-     (reg => x"18", val => x"00"), -- CSC disabled
-     (reg => x"55", val => x"00"), -- 0 default
-     (reg => x"56", val => x"28"), -- 16:9, active same as aspect ratio
-     -- (reg => x"48", val => x"28"), -- 11 0 default
+     (addr => x"72", reg => x"48", val => x"20"), -- DDR alignment [35:24]
+     (addr => x"72", reg => x"15", val => x"05"), -- Input 444 (RGB or YCrCb) with Separate Syncs DDR
+     (addr => x"72", reg => x"16", val => x"38"), -- 8 bit, style 1, falling edge
+     (addr => x"72", reg => x"17", val => x"02"), -- 12 bit, style 1, falling edge
+     (addr => x"72", reg => x"18", val => x"00"), -- CSC disabled
+     (addr => x"72", reg => x"55", val => x"00"), -- 0 default
+     (addr => x"72", reg => x"56", val => x"28"), -- 16:9, active same as aspect ratio
+     -- (addr => x"ff", reg => x"48", val => x"28"), -- 11 0 default
      -- Set output mode
-     (reg => x"af", val => x"04"), -- Must be 04
-     (reg => x"40", val => x"80"), -- GC Package Enable
-     (reg => x"4c", val => x"04"), -- 0 default
+     (addr => x"72", reg => x"af", val => x"04"), -- Must be 04
+     (addr => x"72", reg => x"40", val => x"80"), -- GC Package Enable
+     (addr => x"72", reg => x"4c", val => x"04"), -- 0 default
      -- Tell the display the resolution
-     (reg => x"3c", val => x"04"), -- Nbr of times to search for good phase
-     (reg => x"d1", val => x"ff"), -- Nbr of times to search for good phase
-     (reg => x"de", val => x"9c"), -- ADI required write
-     (reg => x"e4", val => x"9c"), -- ADI required write
-     (reg => x"96", val => x"20"), -- Clear HPD interrupt
-     (reg => x"fa", val => x"00"), -- Nbr of times to search for good phase
+     (addr => x"72", reg => x"3c", val => x"04"), -- Nbr of times to search for good phase
+     (addr => x"72", reg => x"d1", val => x"ff"), -- Nbr of times to search for good phase
+     (addr => x"72", reg => x"de", val => x"9c"), -- ADI required write
+     (addr => x"72", reg => x"e4", val => x"9c"), -- ADI required write
+     (addr => x"72", reg => x"96", val => x"20"), -- Clear HPD interrupt
+     (addr => x"72", reg => x"fa", val => x"00"), -- Nbr of times to search for good phase
      -- Set the video clock delay
-     (reg => x"ba", val => x"60"), -- Configure no clock delay
+     (addr => x"72", reg => x"ba", val => x"60"), -- Configure no clock delay
+     ---------------------
+     -- MAX9850+ Audio out
+     ---------------------
+     (addr => x"20", reg => x"02", val => x"59"), -- -29.5 dB (Pg 24 datasheet)
+     (addr => x"20", reg => x"03", val => x"40"), -- GPIO high impedance, no zero detect
+     (addr => x"20", reg => x"04", val => x"00"), -- disable interrupts
+     (addr => x"20", reg => x"05", val => x"FD"), -- Power on, Mclk enable, charge pump enable, headphone out enable, DAC enable
+     (addr => x"20", reg => x"06", val => x"00"), -- Transparent internal clock devider
+     (addr => x"20", reg => x"07", val => x"40"), -- Use internal oscillator for charge pump
+     --(addr => x"20", reg => x"08", val => x"45"), -- Non interger mode 45C5 +- 48Khz 
+     --(addr => x"20", reg => x"09", val => x"c5"), -- 
+     (addr => x"20", reg => x"08", val => x"00"), -- Non interger mode 45C5 +- 48Khz 
+     (addr => x"20", reg => x"09", val => x"00"), -- 
+     (addr => x"20", reg => x"0a", val => x"08"), -- Slave mode, 16 bits
      -- Fill the rest of the array with 'FF'
-     others => (reg => x"ff", val => x"ff")  -- 25 FFFF end of sequence
+     others => (addr => x"ff", reg => x"ff", val => x"ff")  -- 25 FFFF end of sequence
    );
    
    -- ATTRIBUTE MARK_DEBUG : string;
@@ -165,7 +182,8 @@ begin
        rst => rst,
 
         -- Host interface
-       cmd_address => std_logic_vector(i2c_wr_addr(7 downto 1)),
+       --cmd_address => std_logic_vector(i2c_wr_addr(7 downto 1)),
+       cmd_address => reg_value(23 downto 17),
        cmd_start => cmd_start,
        cmd_read => cmd_read,
        cmd_write => cmd_write,
@@ -212,7 +230,8 @@ begin
    registers: process(clk)
    begin
       if rising_edge(clk) then
-        reg_value <= C_init_sequence(to_integer(unsigned(address))).reg
+        reg_value <= C_init_sequence(to_integer(unsigned(address))).addr
+                   & C_init_sequence(to_integer(unsigned(address))).reg
                    & C_init_sequence(to_integer(unsigned(address))).val;
       end if;
    end process;
@@ -227,11 +246,11 @@ begin
          else 
             case send_state is
                -- WRITE SEQUENCE
-            -- Send start and address
+               -- Send start and address
                when START =>
 
-               -- ffff is end of initialization sequence
-                  if(reg_value = X"ffff") then
+                  -- ffff is end of initialization sequence
+                  if(reg_value = X"ffffff") then
                      send_state <= WAIT_RETRANS;
                   else
                      cmd_valid <= '1';
@@ -244,7 +263,7 @@ begin
                         send_state <= FIRST_BYTE;
                      end if;
                   end if;
-            -- Send first data byte (register)
+               -- Send first data byte (register)
                when FIRST_BYTE =>
                   data_in <= reg_value(7 downto 0);
                   data_in_valid <= '1';
@@ -256,7 +275,7 @@ begin
                      send_state <= SECOND_BYTE;
                   end if;
 
-            -- Send second data byte (content)
+               -- Send second data byte (content)
                when SECOND_BYTE =>
                   cmd_valid <= '1';
                   data_in_valid <= '1';
@@ -267,7 +286,7 @@ begin
                      send_state <= STOP;
                   end if;
 
-            -- Send stop
+               -- Send stop
                when STOP =>
                   data_in_valid <= '0';
                   data_in_last <= '0';
@@ -275,7 +294,7 @@ begin
                   address <= std_logic_vector(unsigned(address) + 1);
                   send_state <= START;   
 
-            -- wait for retransfer signal
+               -- wait for retransfer signal
                when WAIT_RETRANS =>
                   cmd_valid <= '0';
                   cmd_write <= '0';
@@ -289,7 +308,7 @@ begin
                      send_state <= START_RD;
                   end if;
 
-            -- READ SEQUENCE
+               -- READ SEQUENCE
 
                -- Send START and write register address
                when START_RD =>

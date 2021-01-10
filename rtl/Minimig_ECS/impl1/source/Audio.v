@@ -243,14 +243,14 @@ audiomixer mix (
 //--------------------------------------------------------------------------------------
 
 //instantiate sigma/delta modulator
-sigmadelta dac
-(
-  .clk(clk),
-  .ldatasum(ldata),
-  .rdatasum(rdata),
-  .left(left),
-  .right(right)
-);
+// sigmadelta dac
+// (
+//   .clk(clk),
+//   .ldatasum(ldata),
+//   .rdatasum(rdata),
+//   .left(left),
+//   .right(right)
+// );
 
 
 //--------------------------------------------------------------------------------------
