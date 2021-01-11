@@ -256,6 +256,9 @@ module pal_to_hd_upsample(
         r_frame_end <= 1'b0;
         if (r_pal_vsync_ == 1'b1 && i_pal_vsync == 1'b0) begin
             r_frame_end <= 1'b1;
+            // Reset the read and write buffer to start
+            r_cur_read_buf  = 2'b00;  
+            r_cur_write_buf = 2'b00;
         end
     end
 
