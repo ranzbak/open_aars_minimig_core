@@ -51,6 +51,8 @@ localparam [7:0]
     REG_VAL_IODIRB = 8'hFF,
     REG_VAL_INTENA = 8'hFF,       // Trigger interrupt any input change
     REG_VAL_INTENB = 8'hFF,
+    REG_VAL_GPPUA  = 8'hFF,       // All pull up resitors high
+    REG_VAL_GPPUB  = 8'hFF,
     REG_VAL_IOCON  = 8'b01010010; // {BANK, MIRROR, SEQOP, DISSLW, HAEN, ODR, INTPOL, Unused}
 
 // SPI
@@ -91,11 +93,14 @@ localparam [4:0]
     ST_SET_IODIRB  = 2,
     ST_SET_INTENA  = 3,
     ST_SET_INTENB  = 4,
-    ST_SET_IOCON   = 5,
+    ST_SET_GPPUA   = 5,
+    ST_SET_GPPUB   = 6,
+    ST_SET_IOCON   = 7,
     ST_WAITINT     = 10,
     ST_READ_GPIOA  = 11,
     ST_READ_GPIOB  = 12,
     ST_DONE        = 13;
+(* mark_debug = "true", keep = "true" *)
 reg [4:0] mcp_state = ST_IDLE;
 
 //// SPI Master ////
@@ -313,21 +318,27 @@ always @(posedge clk) begin
             write_mcp(REG_ADR_INTENA, REG_VAL_INTENA, ST_SET_INTENB);
         end
         ST_SET_INTENB: begin
-            write_mcp(REG_ADR_INTENB, REG_VAL_INTENB, ST_SET_IOCON);
+            write_mcp(REG_ADR_INTENB, REG_VAL_INTENB, ST_SET_GPPUA);
+        end
+        ST_SET_GPPUA: begin
+            write_mcp(REG_ADR_GPPUA, REG_VAL_GPPUA, ST_SET_GPPUB);
+        end
+        ST_SET_GPPUB: begin
+            write_mcp(REG_ADR_GPPUB, REG_VAL_GPPUB, ST_SET_IOCON);
         end
         ST_WAITINT: begin
-            if(inta_s)
-                mcp_state <= ST_READ_GPIOA;
+            //if(inta_s)
+            mcp_state <= ST_READ_GPIOA;
         end
         ST_READ_GPIOA: begin
             read_mcp(REG_ADR_GPIOA, 1, ST_READ_GPIOB, st_data, st_seq, st_dv);
-            if (st_dv) begin
+            if (st_dv && st_seq == 5'h01 ) begin
                 joya_raw <= st_data;
             end
         end
         ST_READ_GPIOB: begin
             read_mcp(REG_ADR_GPIOB, 1, ST_WAITINT, st_data, st_seq, st_dv);
-            if (st_dv) begin
+            if (st_dv && st_seq == 5'h01) begin
                 joyb_raw <= st_data;
             end
         end
