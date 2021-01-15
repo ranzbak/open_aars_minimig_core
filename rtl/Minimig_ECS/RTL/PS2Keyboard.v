@@ -310,7 +310,8 @@ always @(posedge clk)
 assign aflock = capslock;
 
 //generate keystrobe to indicate valid keycode				
-always @(posedge clk) 
+//always @(posedge clk) 
+always @(capslock, caps, keyequal, keydat, keydat2, valid) 
 	if (capslock && caps)//filter out capslock downstroke && capslock upstroke events if capslock is set
 		keystrobe <= 0;
 	else if (keyequal && (keydat[7]==keydat2[7]))//filter out duplicate events
