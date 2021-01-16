@@ -44,6 +44,9 @@ entity cfide is
         turbochipram : out std_logic;
         scandoubler  : out std_logic;
 
+        stereobleed  : out std_logic;
+        audiovolume  : out std_logic_vector(5 downto 0);
+
         memce        : out std_logic;
         cpudata      : out std_logic_vector(15 downto 0);
         cpuena       : buffer std_logic;
@@ -178,6 +181,8 @@ begin
             fastramsize<="000";
             turbochipram<='0';
             scandoubler<='1';
+            audiovolume<="000000";
+            stereobleed<='0';
         end if;
         if PART_select='1' and state="11" then  -- Write to platform registers
             case addr(4 downto 1) is
@@ -185,6 +190,9 @@ begin
                     fastramsize<=cpudata_in(2 downto 0);
                     turbochipram<=cpudata_in(15);
                     scandoubler<=cpudata_in(14);
+                when "1011" =>
+                    audiovolume<=cpudata_in(5 downto 0);
+                    stereobleed<=cpudata_in(6);
                 when others =>
                     null;
             end case;
