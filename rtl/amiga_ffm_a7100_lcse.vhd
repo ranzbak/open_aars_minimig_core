@@ -123,6 +123,7 @@ architecture struct of amiga_ffm_a7100 is
   signal clk7m: std_logic := '0';
   signal clk28m: std_logic := '0';
 
+
   signal n_joy1: std_logic_vector(5 downto 0);
   signal n_joy2: std_logic_vector(5 downto 0);
 
@@ -173,6 +174,10 @@ architecture struct of amiga_ffm_a7100 is
   -- LED assignments
   signal odd_leds: std_logic;
   signal power_leds: std_logic;
+
+-- attribute mark_debug : string; 
+-- attribute mark_debug of n_joy1 : signal is "true";
+-- attribute mark_debug of n_joy2 : signal is "true";
 begin
   -- btn(0) used as reset has inverted logic
   sys_reset_n <= sys_reset_in; -- '1' is not reset, '0' is reset
@@ -199,14 +204,9 @@ begin
   ps2_clk1 <= '0' when (ps2k_clk_out='0') else 'Z';
 
   ps2m_dat_in<=ps2_data2;
-  -- ps2_data2 <= '0' when (ps2m_dat_out='0') else 'Z';
-  PS2_data2 <= 'Z';
+  ps2_data2 <= '0' when (ps2m_dat_out='0') else 'Z';
   ps2m_clk_in<=ps2_clk2;
-  -- ps2_clk2 <= '0' when (ps2m_clk_out='0') else 'Z';
-  ps2_clk2 <= 'Z';
-
-  --clkin_ibufgds: ibufgds
-  --port map (I => clk_100MHz_P, IB => clk_100MHz_N, O => clk_100MHz);
+  ps2_clk2 <= '0' when (ps2m_clk_out='0') else 'Z';
 
   -- Clock generator
   clk_main: mmcme2_base
