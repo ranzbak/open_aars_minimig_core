@@ -61,9 +61,9 @@
 // 11-04-2011	- autofire function toggle able via capslock / led status
 //
 // TobiFlex
-// 2011-04-10   - double buffering for spi8:out   
-// 2011-04-10   - add cpu and fastmem config   
-// 2012-01-07   - add Joystick 1-4 and AMIGA mice 1+2 and AMIGA Keybord for Chameleon Docking Station   
+// 2011-04-10   - double buffering for spi8:out
+// 2011-04-10   - add cpu and fastmem config
+// 2012-01-07   - add Joystick 1-4 and AMIGA mice 1+2 and AMIGA Keybord for Chameleon Docking Station
 
 module userio
 (
@@ -73,7 +73,7 @@ module userio
 	input	c1,
 	input	c3,
 	input	sol,					// start of video line
-	input	sof,					// start of video frame 
+	input	sof,					// start of video frame
 	input 	[8:1] reg_address_in,	// register adress inputs
 	input	[15:0] data_in,			// bus data in
 	output	reg [15:0] data_out,	// bus data out
@@ -109,7 +109,7 @@ module userio
 	output	bootrst					// user reset to bootloader
 );
 
-// local signals	
+// local signals
 reg		[5:0] _sjoy1;				// synchronized joystick 1 signals
 reg		[5:0] _djoy1;				// synchronized joystick 1 signals
 reg		[5:0] _xjoy2;				// synchronized joystick 2 signals
@@ -126,16 +126,16 @@ reg		joy1enable;					// joystick 1 enable (mouse/joy switch)
 reg		joy2enable;					// joystick 2 enable when no osd
 //wire	osd_enable;					// OSD display enable
 wire	key_disable;				// Amiga keyboard disable
-reg		[7:0] t_osd_ctrl;			// JB: osd control lines
-//wire		[7:0] t_osd_ctrl;			// JB: osd control lines
-wire	test_load;					// load test value to mouse counter 
+//reg		[7:0] t_osd_ctrl;			// JB: osd control lines
+wire		[7:0] t_osd_ctrl;			// JB: osd control lines
+wire	test_load;					// load test value to mouse counter
 wire	[15:0] test_data;			// mouse counter test value
 wire	[1:0] autofire_config;
 reg		[1:0] autofire_cnt;
 reg		autofire;
 reg		sel_autofire;			// select autofire and permanent fire
 
-// register names and adresses		
+// register names and adresses
 parameter JOY0DAT = 9'h00a;
 parameter JOY1DAT = 9'h00c;
 parameter POTINP  = 9'h016;
@@ -159,8 +159,8 @@ always @(posedge clk)
 			autofire_cnt <= autofire_config;
 		else
 			autofire_cnt <= autofire_cnt - 1;
-			
-// autofire 
+
+// autofire
 always @(posedge clk)
 	if (sof)
 		if (autofire_config == 0)
@@ -175,21 +175,21 @@ always @(posedge clk)
 // disable keyboard when OSD is displayed
 always @(key_disable)
 	keyboard_disabled <= key_disable;
-											   
+
 // input synchronization of external signals
 always @(posedge clk)
-	_sjoy1[5:0] <= _joy1[5:0];	
+	_sjoy1[5:0] <= _joy1[5:0];
 always @(posedge clk)
-	_djoy1[5:0] <= _sjoy1[5:0];	
+	_djoy1[5:0] <= _sjoy1[5:0];
 
 always @(posedge clk)
-	_tjoy2[5:0] <= _joy2[5:0];	
+	_tjoy2[5:0] <= _joy2[5:0];
 always @(posedge clk)
-	_djoy2[5:0] <= _tjoy2[5:0];	
+	_djoy2[5:0] <= _tjoy2[5:0];
 
 always @(posedge clk)
 	if (sof)
-		_xjoy2[5:0] <= _joy2[5:0];	
+		_xjoy2[5:0] <= _joy2[5:0];
 
 // port 2 joystick disable in osd
 always @(posedge clk)
@@ -201,51 +201,28 @@ always @(posedge clk)
 //	autofire is permanent active if enabled, can be overwritten any time by normal fire button
 assign _sjoy2[5:0] = joy2enable ? {_xjoy2[5], sel_autofire ^ _xjoy2[4], _xjoy2[3:0]} : 6'b11_1111;
 
-localparam autorepeat_bits = 22; // defines key autorepeat delay
-localparam click_time = 65536; // defines key short-click time
-reg [autorepeat_bits-1:0] joy_autorepeat;
-reg joy_click = 0;
-
-// joystick single click gate
-// assign joy_click = joy_autorepeat != 0 && joy_autorepeat < 32 ? 1 : 0;
-// joystick hold gate
-assign joy_hold = joy_autorepeat[autorepeat_bits-1] == 1 ? 1 : 0;
-
-always @(posedge clk)
-begin
-  if(joy_autorepeat == 1)
-    joy_click <= 1;
-  if(joy_autorepeat == click_time)
-    joy_click <= 0;
-  if(&_xjoy2 == 1) // all buttons released
-    joy_autorepeat <= 0;
-  else
-    if(joy_hold == 0) // not yet all bits set, can increment
-      joy_autorepeat <= joy_autorepeat+1;
-end
-
-always @(joy2enable or _xjoy2 or osd_ctrl or joy_click)
-	if (~joy2enable && (joy_click || joy_hold))
-		if ( &(~_xjoy2[3:0]) ) // MENU: press all 4 buttons
-			t_osd_ctrl = KEY_MENU;
-		else if (~_xjoy2[4])
-			t_osd_ctrl = KEY_ENTER;
-		else if (~_xjoy2[3])
-			t_osd_ctrl = KEY_UP;
-		else if (~_xjoy2[2])
-			t_osd_ctrl = KEY_DOWN;
-		else if (~_xjoy2[1])
-			t_osd_ctrl = KEY_LEFT;
-		else if (~_xjoy2[0])
-			t_osd_ctrl = KEY_RIGHT;
-		else
-			t_osd_ctrl = osd_ctrl;
-	else
-		if ( &(~_xjoy2[3:0]) )
-			t_osd_ctrl = KEY_MENU;
-		else
-			t_osd_ctrl = osd_ctrl;
-//assign	t_osd_ctrl = osd_ctrl;
+//always @(joy2enable or _xjoy2 or osd_ctrl)
+//	if (~joy2enable)
+//		if (~_xjoy2[5] || (~_xjoy2[3] && ~_xjoy2[2]))
+//			t_osd_ctrl = KEY_MENU;
+//		else if (~_xjoy2[4])
+//			t_osd_ctrl = KEY_ENTER;
+//		else if (~_xjoy2[3])
+//			t_osd_ctrl = KEY_UP;
+//		else if (~_xjoy2[2])
+//			t_osd_ctrl = KEY_DOWN;
+//		else if (~_xjoy2[1])
+//			t_osd_ctrl = KEY_LEFT;
+//		else if (~_xjoy2[0])
+//			t_osd_ctrl = KEY_RIGHT;
+//		else
+//			t_osd_ctrl = osd_ctrl;
+//	else
+//		if (~_xjoy2[3] && ~_xjoy2[2])
+//			t_osd_ctrl = KEY_MENU;
+//		else
+//			t_osd_ctrl = osd_ctrl;
+assign	t_osd_ctrl = osd_ctrl;
 
 // port 1 automatic mouse/joystick switch
 always @(posedge clk)
@@ -253,8 +230,8 @@ always @(posedge clk)
 		joy1enable = 0;
 	else if (!_sjoy1[4])// when joystick 1 fire pushed, switch to joystick
 		joy1enable = 1;
-		
-		
+
+
 //Port 1
 always @(posedge clk)
 	if (test_load)
@@ -263,9 +240,9 @@ always @(posedge clk)
 		dmouse0dat[7:0] <= dmouse0dat[7:0] + 1;
 	else if ((!_djoy1[0] && _sjoy1[0] && !_sjoy1[2]) || (_djoy1[0] && !_sjoy1[0] && _sjoy1[2]) || (!_djoy1[2] && _sjoy1[2] && _sjoy1[0]) || (_djoy1[2] && !_sjoy1[2] && !_sjoy1[0]))
 		dmouse0dat[7:0] <= dmouse0dat[7:0] - 1;
-	else	
+	else
 		dmouse0dat[1:0] <= {!_djoy1[0], _djoy1[0] ^ _djoy1[2]};
-	
+
 always @(posedge clk)
 	if (test_load)
 		dmouse0dat[15:8] <= 8'h00;
@@ -273,7 +250,7 @@ always @(posedge clk)
 		dmouse0dat[15:8] <= dmouse0dat[15:8] + 1;
 	else if ((!_djoy1[1] && _sjoy1[1] && !_sjoy1[3]) || (_djoy1[1] && !_sjoy1[1] && _sjoy1[3]) || (!_djoy1[3] && _sjoy1[3] && _sjoy1[1]) || (_djoy1[3] && !_sjoy1[3] && !_sjoy1[1]))
 		dmouse0dat[15:8] <= dmouse0dat[15:8] - 1;
-	else	
+	else
 		dmouse0dat[9:8] <= {!_djoy1[1], _djoy1[1] ^ _djoy1[3]};
 
 //Port 2
@@ -284,9 +261,9 @@ always @(posedge clk)
 		dmouse1dat[7:0] <= dmouse1dat[7:0] + 1;
 	else if ((!_djoy2[0] && _tjoy2[0] && !_tjoy2[2]) || (_djoy2[0] && !_tjoy2[0] && _tjoy2[2]) || (!_djoy2[2] && _tjoy2[2] && _tjoy2[0]) || (_djoy2[2] && !_tjoy2[2] && !_tjoy2[0]))
 		dmouse1dat[7:0] <= dmouse1dat[7:0] - 1;
-	else	
+	else
 		dmouse1dat[1:0] <= {!_djoy2[0], _djoy2[0] ^ _djoy2[2]};
-	
+
 always @(posedge clk)
 	if (test_load)
 		dmouse1dat[15:10] <= test_data[15:10];
@@ -294,7 +271,7 @@ always @(posedge clk)
 		dmouse1dat[15:8] <= dmouse1dat[15:8] + 1;
 	else if ((!_djoy2[1] && _tjoy2[1] && !_tjoy2[3]) || (_djoy2[1] && !_tjoy2[1] && _tjoy2[3]) || (!_djoy2[3] && _tjoy2[3] && _tjoy2[1]) || (_djoy2[3] && !_tjoy2[3] && !_tjoy2[1]))
 		dmouse1dat[15:8] <= dmouse1dat[15:8] - 1;
-	else	
+	else
 		dmouse1dat[9:8] <= {!_djoy2[1], _djoy2[1] ^ _djoy2[3]};
 
 //--------------------------------------------------------------------------------------
@@ -306,7 +283,7 @@ always @(reg_address_in or joy1enable or _sjoy1 or mouse0dat or dmouse0dat or _s
 		data_out[15:0] = {mouse0dat[15:10] + dmouse0dat[15:10],dmouse0dat[9:8],mouse0dat[7:2] + dmouse0dat[7:2],dmouse0dat[1:0]};
 	else if (reg_address_in[8:1]==JOY0DAT[8:1])// read port 1 mouse
 		data_out[15:0] = {mouse0dat[15:8] + dmouse0dat[15:8],mouse0dat[7:0] + dmouse0dat[7:0]};
-		
+
 	else if (reg_address_in[8:1]==JOY1DAT[8:1])// read port 2 joystick
 		data_out[15:0] = dmouse1dat;
 	else if (reg_address_in[8:1]==POTINP[8:1])// read mouse and joysticks extra buttons
@@ -398,7 +375,7 @@ module osd
 	input	c1,								// clk28m domain clock enable
 	input	c3,
 	input	sol,							// start of video line
-	input	sof,							// start of video frame 
+	input	sof,							// start of video frame
 	input	[7:0] osd_ctrl,					// keycode for OSD control (Amiga keyboard codes + additional keys coded as values > 80h)
 	input	_scs,							// SPI enable
 	input	sdi,		  					// SPI data in
@@ -460,7 +437,7 @@ begin
 	chipset_config[3:2] <= t_chipset_config[3:2];
 	chipset_config[0] <= t_chipset_config[0];
 end
-		
+
 //--------------------------------------------------------------------------------------
 // OSD video generator
 //--------------------------------------------------------------------------------------
@@ -478,7 +455,7 @@ always @(posedge clk)
 		verbeam <= 0;
 	else if (sol)
 		verbeam <= verbeam + 1;
-		
+
 always @(posedge clk)
 	if (sol)
 		vpos[5:0] <= verbeam[5:0];
@@ -500,7 +477,7 @@ always @(posedge clk)
 		vframe <= 1;
 	else if (verbeam[0])
 		vframe <= 0;
-		
+
 always @(posedge clk)
 	if (sol)
 		vena <= vframe;
@@ -510,7 +487,7 @@ reg osd_enabled;
 always @(posedge clk)
 	if (sof)
 		osd_enabled <= osd_enable;
-		
+
 assign osdframe = vframe & hframe & osd_enabled;
 
 always @(posedge clk)
@@ -535,7 +512,7 @@ assign osd_blank = osdframe;
 always @(posedge clk) // input part
 	if (wren)
 		osdbuf[wraddr[10:0]] <= wrdat[7:0];
-		
+
 always @(posedge clk28m) // output part
 	bufout[7:0] <= osdbuf[{vpos[5:3],horbeam[8]^horbeam[7],~horbeam[7],horbeam[6:1]}];
 
@@ -588,22 +565,22 @@ always @(posedge clk)
 always @(posedge clk)
 	if (rx && cmd && wrdat[7:4]==4'b1010)
 		scanline <= wrdat[1:0];
-		
+
 // hdd config
 always @(posedge clk)
 	if (rx && cmd && wrdat[7:4]==4'b1011)
 		t_ide_config <= wrdat[2:0];
-		
+
 // floppy speed select
 always @(posedge clk)
 	if (rx && cmd && wrdat[7:4]==4'b1100)
 		floppy_config[3:0] <= wrdat[3:0];
-		
+
 // chipset features select
 always @(posedge clk)
 	if (rx && cmd && wrdat[7:4]==4'b1101)
 		t_chipset_config[3:0] <= wrdat[3:0];
-		
+
 // video filter configuration
 always @(posedge clk)
 	if (rx && cmd && wrdat[7:4]==4'b1110)
@@ -619,12 +596,12 @@ always @(posedge clk)
 always @(posedge clk)
 	if (rx && cmd && wrdat[7:2]==6'b1111_10)	//fast
 		t_memory_config[5:4] <= wrdat[1:0];
-		
+
 // cpu config
 always @(posedge clk)
 	if (rx && cmd && wrdat[7:2]==6'b1111_11)
 		t_cpu_config <= wrdat[1:0];
-		
+
 
 // autofire configuration
 always @(posedge clk)
@@ -643,7 +620,7 @@ always @(posedge clk)
 		highlight <= 4'b1000;
 	else if (rx && cmd && wrdat[7:4]==4'b0011)
 		highlight <= wrdat[3:0];
-		
+
 // disable/enable osd display
 // memory configuration
 always @(posedge clk)
@@ -652,12 +629,12 @@ always @(posedge clk)
 
 assign wren = rx && ~cmd && wrcmd ? 1'b1 : 1'b0;
 
-// user reset request (from osd menu)		
+// user reset request (from osd menu)
 assign usrrst = rx && cmd && wrdat[7:1]==7'b1000_000 ? 1'b1 : 1'b0;
 
 // reset to bootloader
 assign bootrst = rx && cmd && wrdat[7:0]==8'b1000_0001 ? 1'b1 : 1'b0;
-	  
+
 endmodule
 
 //--------------------------------------------------------------------------------------
@@ -677,7 +654,7 @@ endmodule
 // sample ->      ^   ^   ^   ^
 // strobe is asserted at the end of every byte and signals that new data must
 // be registered at the out output. At the same time, new data is read from the in input.
-// The data at input in is also sent as the first byte after _scs is asserted (without strobe!). 
+// The data at input in is also sent as the first byte after _scs is asserted (without strobe!).
 module spi8
 (
 	input 	clk,		    // pixel clock
@@ -742,7 +719,7 @@ always @(posedge sck or posedge _scs)
 always @(posedge sck)
 	if (bit_cnt==7)
 		cmd <= first_byte;		// active only when first byte received
-	
+
 //------ serial data output register ------//
 always @(negedge sck)	// output change on falling SPI clock
 	if (bit_cnt==0)
@@ -766,7 +743,7 @@ endmodule
 module ps2mouse
 (
 	input 	clk,		    	// bus clock
-	input 	reset,			   	// reset 
+	input 	reset,			   	// reset
 	input	ps2mdat,			//mouse PS/2 data
 	input	ps2mclk,			//mouse PS/2 clk
 	output	ps2mdato,			//mouse PS/2 data
@@ -781,26 +758,28 @@ module ps2mouse
 );
 
 //local signals
-reg		mclkout; 				// mouse clk out
-wire	mdatout;				// mouse data out
-reg		mdatb,mclkb,mclkc;		// input synchronization	
+reg		mclkout = 1'b1; 		// mouse clk out
+reg 	mdatout = 1'b1;			// mouse data out
+reg		mdatb,mclkb,mclkc;		// input synchronization
 
-reg		[10:0] mreceive;		// mouse receive register	
+reg		[10:0] mreceive;		// mouse receive register
 reg		[11:0] msend;			// mouse send register
-reg		[15:0] mtimer;			// mouse timer
-reg		[2:0] mstate;			// mouse current state
-reg		[2:0] mnext;			// mouse next state
+reg		[15:0] mtimer = 0;			// mouse timer
+reg		[3:0] mstate;			// mouse current state
+//reg		[2:0] mnext;			// mouse next state
 
-wire	mclkneg;				// negative edge of mouse clock strobe
+reg  	mclkneg;				// negative edge of mouse clock strobe
 reg		mrreset;				// mouse receive reset
 wire	mrready;				// mouse receive ready;
 reg		msreset;				// mosue send reset
-wire	msready;				// mouse send ready;
+wire 	msready;				// mouse send ready;
 reg		mtreset;				// mouse timer reset
-wire	mtready;				// mouse timer ready	 
-wire	mthalf;					// mouse timer somewhere halfway timeout
-wire	mttest;
+reg 	mtready;				// mouse timer ready
+reg 	mthalf;					// mouse timer somewhere halfway timeout
+reg 	mttest;
 reg		[1:0] mpacket;			// mouse packet byte valid number
+reg     ps2mdat_;               // meta stability
+reg     ps2mclk_;               // meta stability
 
 // bidirectional open collector IO buffers
 //assign ps2mclk = (mclkout) ? 1'bz : 1'b0;
@@ -811,41 +790,79 @@ assign ps2mdato=mdatout;
 // input synchronization of external signals
 always @(posedge clk)
 begin
-	mdatb <= ps2mdat;
-	mclkb <= ps2mclk;
+	ps2mdat_ <= ps2mdat;
+	mdatb <= ps2mdat_;
+	ps2mclk_ <= ps2mclk;
+	mclkb <= ps2mclk_;
 	mclkc <= mclkb;
-end						
+	mclkneg <= 0;
+	if (mclkc && ~mclkb) begin
+		mclkneg <= 1;
+	end
+end
 
 // detect mouse clock negative edge
-assign mclkneg = mclkc & (~mclkb);
+//assign mclkneg = mclkc & (~mclkb);
 
 // PS2 mouse input shifter
-always @(posedge clk)
-	if (mrreset)
+always @(posedge clk) begin
+	if (mrreset) begin
 		mreceive[10:0]<=11'b11111111111;
-	else if (mclkneg)
-		mreceive[10:0]<={mdatb,mreceive[10:1]};
+	end else begin
+		if (mclkneg) begin
+			mreceive[10:0]<={mdatb,mreceive[10:1]};
+		end
+	end
+end
 assign mrready=~mreceive[0];
 
 // PS2 mouse send shifter
-always @(posedge clk)
-	if (msreset)
-		msend[11:0]<=12'b110111101000;
-	else if (!msready && mclkneg)
-		msend[11:0]<={1'b0,msend[11:1]};
+always @(posedge clk) begin
+	if (msreset) begin
+		//msend[11:0]<=12'b110111101000;
+		msend <=  12'b110110101010;
+		mdatout <= 1'b1; // When in reset don't send anything
+	end else begin
+		if (!msready && mclkneg) begin
+			msend[11:0]<={1'b0,msend[11:1]};
+		end
+		mdatout <= msend[0];
+	end
+end
 assign msready=(msend[11:0]==12'b000000000001)?1:0;
-assign mdatout=msend[0];
+//assign mdatout=msend[0];
 
 // PS2 mouse timer
-always @(posedge clk)
-	if (mtreset)
-		mtimer[15:0]<=16'h0000;
-	else
-		mtimer[15:0]<=mtimer[15:0]+1;
-assign mtready=(mtimer[15:0]==16'hffff)?1:0;
-assign mthalf=mtimer[11];
+reg mthalf2;
+reg mthalfneg;
+always @(posedge clk) begin
+	// Initial values
+	mtready <= 1'b0;
+	mthalfneg <= 1'b0;
+
+	// mt wave forms
+	mthalf <= mtimer[11];
+	mttest <= mtimer[14];
+
+	if (mtreset || reset) begin
+		mtimer<=16'h0000;
+	end else begin
+		mtimer<=mtimer+1;
+		if (mtimer == 16'hffff) begin
+			mtimer<=16'h0000;
+			mtready <= 1'b1;
+		end
+	end
+
+	// Pulse at half time
+	mthalf2 <= mthalf;
+	if (mthalf2 && ~mthalf)
+		mthalfneg <= 1'b1;
+end
+//assign mtready=(mtimer[15:0]==16'hffff)?1:0;
+//assign mthalf=mtimer[11];
 //assign mttest=mtimer[13];
-assign mttest=mtimer[14];
+//assign mttest=mtimer[14];
 
 // PS2 mouse packet decoding and handling
 always @(posedge clk)
@@ -853,7 +870,7 @@ begin
 	if (reset) // reset
 	begin
 		{_mthird,_mright,_mleft} <= 3'b111;
-		xcount[7:0] <= 8'h00;	
+		xcount[7:0] <= 8'h00;
 		ycount[7:0] <= 8'h00;
 	end
 	else if (test_load) // test value preload
@@ -869,138 +886,142 @@ end
 //--------------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------
 
+
 // PS2 mouse state machine
-always @(posedge clk)
+always @(posedge clk) begin
 	if (reset || mtready) // master reset OR timeout
 		mstate<=0;
-	else 
-		mstate<=mnext;
-always @(mstate or mthalf or msready or mrready or mreceive)
-begin
 	case(mstate)
 		0: // initialize mouse phase 0, start timer
 			begin
-				mclkout=1;
-				mrreset=0;
-				mtreset=1;
-				msreset=0;
-				mpacket=0;
-				mnext=1;
+				mclkout<=1;
+				mrreset<=0;
+				mtreset<=0;
+				msreset<=1;
+				mpacket<=0;
+				if (mthalfneg)
+					mstate<=1;
 			end
 
-		1: // initialize mouse phase 1, hold clk low and reset send logic
+		1: // initialize mouse phase 1, hold clk low (request to send) and reset send logic
 			begin
-				mclkout=0;
-				mrreset=0;
-				mtreset=0;
-				msreset=1;
-				mpacket=0;
-				if (mthalf) // clk was low long enough, go to next state
-					mnext=2;
-				else
-					mnext=1;
+				mclkout<=0;
+				mrreset<=0;
+				mtreset<=0;
+				msreset<=1;
+				mpacket<=0;
+				if (mthalf) // clk was low long enough, or device pulls data line down, go to next state
+					mstate<=2; // timeout try again
+				if (~mdatb) // Device pulls data line down start sending data
+					mstate<=3;
 			end
-
-		2: // initialize mouse phase 2, send 'enable data reporting' command to mouse
+		2: // Wait for another mthalf time before retrying
 			begin
-				mclkout=1;
-				mrreset=1;
-				mtreset=0;
-				msreset=0;
-				mpacket=0;
+				mclkout<=1;
+				mrreset<=1;
+				mtreset<=0;
+				msreset<=1;
+				mpacket<=0;
+				if (mthalfneg) // clk was low long enough, or device pulls data line down, go to next state
+					mstate<=1; // timeout try again
+			end
+		3: // initialize mouse phase 2, send 'enable data reporting' command to mouse
+			begin
+				mclkout<=1; // Clock generated by client
+				mrreset<=1;
+				mtreset<=0;
+				msreset<=0;
+				mpacket<=0;
 				if (msready) // command set, go get 'ack' byte
-					mnext=5;
-				else
-					mnext=2;
+					mstate<=5;
 			end
 
 		3: // get first packet byte
 			begin
-				mclkout=1;
-				mtreset=1;
-				msreset=0;
+				mclkout<=1;
+				mtreset<=1;
+				msreset<=0;
 				if (mrready) // we got our first packet byte
 				begin
-					mpacket=1;
-					mrreset=1;
-					mnext=4;
- 				end
-				else // we are still waiting				
- 				begin
-					mpacket=0;
-					mrreset=0;
-					mnext=3;
+					mpacket<=1;
+					mrreset<=1;
+					mstate<=4;
+				end
+				else // we are still waiting
+				begin
+					mpacket<=0;
+					mrreset<=0;
+					mstate<=3;
 				end
 			end
 
 		4: // get second packet byte
 			begin
-				mclkout=1;
-				mtreset=0;
-				msreset=0;
+				mclkout<=1;
+				mtreset<=0;
+				msreset<=0;
 				if (mrready) // we got our second packet byte
 				begin
-					mpacket=2;
-					mrreset=1;
-					mnext=5;
+					mpacket<=2;
+					mrreset<=1;
+					mstate<=5;
 
 				end
-				else // we are still waiting				
- 				begin
-					mpacket=0;
-					mrreset=0;
-					mnext=4;
+				else // we are still waiting
+				begin
+					mpacket<=0;
+					mrreset<=0;
+					mstate<=4;
 				end
 			end
 
 		5: // get third packet byte (or get 'ACK' byte..)
 			begin
-				mclkout=1;
-				mtreset=1;
-				msreset=0;
+				mclkout<=1;
+				mtreset<=1;
+				msreset<=0;
 				if (mrready) // we got our third packet byte
 				begin
-					mpacket=3;
-					mrreset=1;
-					mnext=6;
-
+					mpacket<=3;
+					mrreset<=1;
+					mstate<=6;
 				end
-				else // we are still waiting				
- 				begin
-					mpacket=0;
-					mrreset=0;
-					mnext=5;
+				else // we are still waiting
+				begin
+					mpacket<=0;
+					mrreset<=0;
+					mstate<=5;
 				end
 			end
- 
+
 		6: // get Z packet byte if weel is aktive
 			begin
-				mclkout=1;
-				mtreset=0;
-				msreset=0;
+				mclkout<=1;
+				mtreset<=0;
+				msreset<=0;
 				if (mrready||mttest) // we got our ford packet byte or timeout
 				begin
-					mpacket=0;
-					mrreset=1;
-					mnext=3;
+					mpacket<=0;
+					mrreset<=1;
+					mstate<=3;
 
 				end
-				else // we are still waiting				
- 				begin
-					mpacket=0;
-					mrreset=0;
-					mnext=6;
+				else // we are still waiting
+				begin
+					mpacket<=0;
+					mrreset<=0;
+					mstate<=6;
 				end
 			end
- 
+
 		default: // we should never come here
 			begin
-				mclkout=1'bx;
-				mrreset=1'bx;
-				mtreset=1'bx;
-				msreset=1'bx;
-				mpacket=2'bxx;
-				mnext=0;
+				mclkout<=1'bx;
+				mrreset<=1'bx;
+				mtreset<=1'bx;
+				msreset<=1'bx;
+				mpacket<=2'bxx;
+				mstate<=0;
 			end
 
 	endcase
