@@ -38,7 +38,7 @@ module signal_generator(
     output [7:0] o_b,
     output o_adv_clk,       // Video pixel clock
     output o_adv_de         // Data valid strobe
-    );
+);
 
     // Video generation settings
 

@@ -38,6 +38,7 @@ module pal_to_ddr(
     wire [7:0] w_r;
     wire [7:0] w_g;
     wire [7:0] w_b;
+    wire       w_vsync;
 
     // Upsample routine
     wire [6:0] w_vblank_width;
@@ -89,6 +90,7 @@ module pal_to_ddr(
         __i_pal_b     <= _i_pal_b;
     end
 
+    // Upscale the video signal using a line buffer
     pal_to_hd_upsample myupsample(
         .clk(clk),
         // Pal input
@@ -101,16 +103,17 @@ module pal_to_ddr(
         .o_hd_r(w_r),
         .o_hd_g(w_g),
         .o_hd_b(w_b),
+        .o_hd_vsync(w_vsync),
         //.o_vblank_width(w_vblank_width),
         .o_frame_end(w_frame_end),
         // HD sync pulse
         .i_hd_hsync(o_hsync),
-        .i_hd_vsync(o_vsync),
+        .i_hd_vsync(w_hd_vsync),
         .i_hd_clk(w_adv_clk),
         .i_hd_four_three(1'b0)
     );
-    
-    // Convert the generated output data into video out signals
+
+    // Generate the 720p Hsync and Vsync signals
     signal_generator hd_gen(
         .clk(clk),
         //.i_vblank_width(w_vblank_width),
@@ -138,7 +141,7 @@ module pal_to_ddr(
 
         .de_in(w_adv_de),       // Used to generate DE
         .hsync(w_hd_hsync),
-        .vsync(w_hd_vsync),
+        .vsync(w_vsync),
         .data({w_o_r, w_o_g, w_o_b}), // Pixel data in 24-bpp
 
         // OUTPUT

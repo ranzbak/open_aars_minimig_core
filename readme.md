@@ -34,9 +34,14 @@ The Hardware provides:
 
 ## Issues to be fixed
 
-- Joystick interface is unstable
-- Sometimes using the fire button results in the OSD menu appearing
-- The rolling window video scaler needs work
-- The PS/2 mouse interface does not work
-- The original Amiga mouse does not work on joystick port
+- Stabelize the image as it's flickering from the interlaced source signal
+- The PS/2 mouse interface does not work (Add pull ups??)
 - machine crashes when the audio plug is inserted or removed
+
+## Issues fixed
+
+- Joystick interface is unstable (fixed)
+- Sometimes using the fire button results in the OSD menu appearing (fixed)
+- The original Amiga mouse does not work on joystick port (fixed)
+- Image appears too low on display implement vertical tranlation
+- Image is too narrow, fix video scaler
