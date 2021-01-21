@@ -6,12 +6,12 @@ This Project contains the ported Minimig core originally written by Dennis van W
 The core has been altered to work on the [QMTech](http://www.chinaqmtech.com/)
 XC7100T FPGA core board and the Open AARS (Adaptive Amiga Retro System) IO board.
 The design for the IO board can be found here :
-[https://github.com/ranzbak/qmtech_minimig](The V4.0 Light version).
+[The V4.0 Light version](https://github.com/ranzbak/qmtech_minimig).
 
 ## Core
 
-At this moment most of the Minimig core is stock.
-The changes are mostly related to interface the core with the HDMI, I2S and joystick over I2C interfaces.
+At this moment most of the [Minimig core](https://github.com/emard/Minimig_ECS) is mostly stock.
+The changes are related to interface the core with the HDMI, I2S, Memory and joystick over I2C interfaces.
 
 ## Board
 
@@ -40,7 +40,7 @@ The Hardware provides:
 - Volume control via the OSD menu
 - AGA chip set support
 - Addition of an ESP32 providing a WIFI interface
-- Adding the DDR3 ram as fast ram to the emulator
+- Use the DDR3 ram on the core board as fast ram
 
 ## Issues to be fixed
 
