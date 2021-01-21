@@ -1,79 +1,16 @@
-# Clock groups
-set_clock_groups -name internat_external_clocks -asynchronous -group [get_clocks [list clk_50mhz [get_clocks -of_objects [get_pins clk_main/CLKOUT0]] [get_clocks -of_objects [get_pins clk_main/CLKOUT1]] [get_clocks -of_objects [get_pins clk_main/CLKOUT2]] [get_clocks -of_objects [get_pins clk_sdram/CLKFBOUT]] [get_clocks -of_objects [get_pins clk_main/CLKFBOUT]] [get_clocks -of_objects [get_pins clk_sdram/CLKOUT0]]]] -group [get_clocks {VIRTUAL_ADV_clk VIRTUAL_ADV_clk28m VIRTUAL_DDR_clk}]
-
-# Intra clock paths
-set_multicycle_path -setup -from [get_clocks -of_objects [get_pins clk_main/CLKOUT1]] -to [get_clocks -of_objects [get_pins clk_main/CLKOUT0]] 8
-# set_multicycle_path -hold -from [get_clocks -of_objects [get_pins clk_main/CLKOUT1]] -to [get_clocks -of_objects [get_pins clk_main/CLKOUT0]] 7
-set_multicycle_path -setup -from [get_clocks -of_objects [get_pins clk_main/CLKOUT1]] -to [get_clocks -of_objects [get_pins clk_main/CLKOUT2]] 4
-set_multicycle_path -hold -from [get_clocks -of_objects [get_pins clk_main/CLKOUT1]] -to [get_clocks -of_objects [get_pins clk_main/CLKOUT2]] 3
-set_multicycle_path -setup -from [get_clocks -of_objects [get_pins clk_main/CLKOUT2]] -to [get_clocks -of_objects [get_pins clk_main/CLKOUT0]] 4
-set_multicycle_path -hold -from [get_clocks -of_objects [get_pins clk_main/CLKOUT2]] -to [get_clocks -of_objects [get_pins clk_main/CLKOUT0]] 3
-set_multicycle_path -setup -start -from [get_clocks -of_objects [get_pins clk_main/CLKOUT2]] -to [get_clocks -of_objects [get_pins clk_main/CLKOUT1]] 4
-set_multicycle_path -hold -start -from [get_clocks -of_objects [get_pins clk_main/CLKOUT2]] -to [get_clocks -of_objects [get_pins clk_main/CLKOUT1]] 3
-set_multicycle_path -setup -start -from [get_clocks -of_objects [get_pins clk_main/CLKOUT0]] -to [get_clocks -of_objects [get_pins clk_main/CLKOUT1]] 8
-set_multicycle_path -hold -start -from [get_clocks -of_objects [get_pins clk_main/CLKOUT0]] -to [get_clocks -of_objects [get_pins clk_main/CLKOUT1]] 7
-set_multicycle_path -setup -start -from [get_clocks -of_objects [get_pins clk_main/CLKOUT0]] -to [get_clocks -of_objects [get_pins clk_main/CLKOUT2]] 4
-set_multicycle_path -hold -start -from [get_clocks -of_objects [get_pins clk_main/CLKOUT0]] -to [get_clocks -of_objects [get_pins clk_main/CLKOUT2]] 3
-
-# Clock paths in clk (112MHz)
-set _xlnx_shared_i0 [get_nets -hierarchical -regexp .*(DPO|mulu_reg|use_base|PC|wbmemmask|regfile_reg).*]
-set_multicycle_path -setup -start -from [get_clocks -of_objects [get_pins clk_main/CLKOUT0]] -through $_xlnx_shared_i0 -to [get_clocks -of_objects [get_pins clk_main/CLKOUT0]] 4
-set_multicycle_path -hold -start -from [get_clocks -of_objects [get_pins clk_main/CLKOUT0]] -through $_xlnx_shared_i0 -to [get_clocks -of_objects [get_pins clk_main/CLKOUT0]] 3
-
-set _xlnx_shared_i1 [get_nets -hierarchical -regexp .*(oddout_reg|opcode|trap|memory_config_reg|state|enable|SPO|Reset_reg|Flags|memaddr_delta).*]
-set_multicycle_path -setup -start -from [get_clocks -of_objects [get_pins clk_main/CLKOUT0]] -through $_xlnx_shared_i1 -to [get_clocks -of_objects [get_pins clk_main/CLKOUT0]] 4
-set_multicycle_path -hold -start -from [get_clocks -of_objects [get_pins clk_main/CLKOUT0]] -through $_xlnx_shared_i1 -to [get_clocks -of_objects [get_pins clk_main/CLKOUT0]] 3
-
-set _xlnx_shared_i2 [get_nets -hierarchical -regexp .*(exec).*]
-set_multicycle_path -setup -start -from [get_clocks -of_objects [get_pins clk_main/CLKOUT0]] -through $_xlnx_shared_i2 -to [get_clocks -of_objects [get_pins clk_main/CLKOUT0]] 4
-set_multicycle_path -hold -start -from [get_clocks -of_objects [get_pins clk_main/CLKOUT0]] -through $_xlnx_shared_i2 -to [get_clocks -of_objects [get_pins clk_main/CLKOUT0]] 3
-
-# set_false_path -from [get_pins -hierarchical -regexp {.*joy(a|b)_reg\[.*\].*}] -to [get_pins -hierarchical -regexp {.*myFampiga/MyMinimig/USERIO1/_sjoy1_reg\[.*\].*}]
 
 create_pblock pblock_1
 add_cells_to_pblock [get_pblocks pblock_1] [get_cells -quiet [list myFampiga/mysdram]]
 resize_pblock [get_pblocks pblock_1] -add {CLOCKREGION_X1Y1:CLOCKREGION_X1Y1}
 
-set_input_delay -clock [get_clocks VIRTUAL_ADV_clk] -min -add_delay -5.000 [get_ports {sd_m_d[*]}]
-set_input_delay -clock [get_clocks VIRTUAL_ADV_clk] -max -add_delay 5.000 [get_ports {sd_m_d[*]}]
-set_output_delay -clock [get_clocks VIRTUAL_ADV_clk] -min -add_delay -5.000 [get_ports {sd_m_d[*]}]
-set_output_delay -clock [get_clocks VIRTUAL_ADV_clk] -max -add_delay 5.000 [get_ports {sd_m_d[*]}]
-set_output_delay -clock [get_clocks VIRTUAL_ADV_clk] -min -add_delay -5.000 [get_ports sd_m_clk]
-set_output_delay -clock [get_clocks VIRTUAL_ADV_clk] -max -add_delay 5.000 [get_ports sd_m_clk]
-set_output_delay -clock [get_clocks VIRTUAL_ADV_clk] -min -add_delay -5.000 [get_ports sd_m_cmd]
-set_output_delay -clock [get_clocks VIRTUAL_ADV_clk] -max -add_delay 5.000 [get_ports sd_m_cmd]
+# Clock groups
+set_clock_groups -name internat_external_clocks -asynchronous -group [get_clocks [list clk_50mhz [get_clocks -of_objects [get_pins clk_main/CLKOUT0]] [get_clocks -of_objects [get_pins clk_main/CLKOUT1]] [get_clocks -of_objects [get_pins clk_main/CLKOUT2]] [get_clocks -of_objects [get_pins clk_sdram/CLKFBOUT]] [get_clocks -of_objects [get_pins clk_main/CLKFBOUT]] [get_clocks -of_objects [get_pins clk_sdram/CLKOUT0]]]] -group [get_clocks {VIRTUAL_ADV_clk VIRTUAL_ADV_clk28m VIRTUAL_DDR_clk}]
+
 
 
 set_multicycle_path -setup -from [get_clocks -of_objects [get_pins clk_main/CLKOUT2]] -to [get_clocks -of_objects [get_pins clk_sdram/CLKOUT0]] 2
 set_multicycle_path -hold -from [get_clocks -of_objects [get_pins clk_main/CLKOUT2]] -to [get_clocks -of_objects [get_pins clk_sdram/CLKOUT0]] 1
 
 
-set_max_delay -from [get_pins -hierarchical -regexp {.*my_pal_to_ddr/_i_pal.*_reg.*/C$.*}] -to [get_pins -hierarchical -regexp {.*my_pal_to_ddr/__i_pal_.*_reg.*/D$.*}] 1.500
 
-
-
-
-connect_debug_port u_ila_0/probe1 [get_nets [list {myFampiga/MyMinimig/USERIO1/pm1/msend[0]} {myFampiga/MyMinimig/USERIO1/pm1/msend[1]} {myFampiga/MyMinimig/USERIO1/pm1/msend[2]} {myFampiga/MyMinimig/USERIO1/pm1/msend[3]} {myFampiga/MyMinimig/USERIO1/pm1/msend[4]} {myFampiga/MyMinimig/USERIO1/pm1/msend[5]} {myFampiga/MyMinimig/USERIO1/pm1/msend[6]} {myFampiga/MyMinimig/USERIO1/pm1/msend[7]} {myFampiga/MyMinimig/USERIO1/pm1/msend[8]} {myFampiga/MyMinimig/USERIO1/pm1/msend[9]} {myFampiga/MyMinimig/USERIO1/pm1/msend[10]} {myFampiga/MyMinimig/USERIO1/pm1/msend[11]}]]
-connect_debug_port u_ila_0/probe3 [get_nets [list {myFampiga/MyMinimig/USERIO1/pm1/mreceive[0]} {myFampiga/MyMinimig/USERIO1/pm1/mreceive[1]} {myFampiga/MyMinimig/USERIO1/pm1/mreceive[2]} {myFampiga/MyMinimig/USERIO1/pm1/mreceive[3]} {myFampiga/MyMinimig/USERIO1/pm1/mreceive[4]} {myFampiga/MyMinimig/USERIO1/pm1/mreceive[5]} {myFampiga/MyMinimig/USERIO1/pm1/mreceive[6]} {myFampiga/MyMinimig/USERIO1/pm1/mreceive[7]} {myFampiga/MyMinimig/USERIO1/pm1/mreceive[8]} {myFampiga/MyMinimig/USERIO1/pm1/mreceive[9]} {myFampiga/MyMinimig/USERIO1/pm1/mreceive[10]}]]
-connect_debug_port u_ila_0/probe6 [get_nets [list myFampiga/MyMinimig/USERIO1/pm1/mdatout]]
-connect_debug_port u_ila_0/probe7 [get_nets [list myFampiga/MyMinimig/USERIO1/pm1/mrready]]
-connect_debug_port u_ila_0/probe8 [get_nets [list myFampiga/MyMinimig/USERIO1/pm1/msready]]
-connect_debug_port u_ila_1/probe1 [get_nets [list {n_joy2[0]} {n_joy2[1]} {n_joy2[2]} {n_joy2[3]} {n_joy2[4]} {n_joy2[5]}]]
-
-connect_debug_port u_ila_0/probe0 [get_nets [list {myFampiga/MyMinimig/CIAA1/kbd1/ptimer[0]} {myFampiga/MyMinimig/CIAA1/kbd1/ptimer[1]} {myFampiga/MyMinimig/CIAA1/kbd1/ptimer[2]} {myFampiga/MyMinimig/CIAA1/kbd1/ptimer[3]} {myFampiga/MyMinimig/CIAA1/kbd1/ptimer[4]} {myFampiga/MyMinimig/CIAA1/kbd1/ptimer[5]} {myFampiga/MyMinimig/CIAA1/kbd1/ptimer[6]} {myFampiga/MyMinimig/CIAA1/kbd1/ptimer[7]} {myFampiga/MyMinimig/CIAA1/kbd1/ptimer[8]} {myFampiga/MyMinimig/CIAA1/kbd1/ptimer[9]} {myFampiga/MyMinimig/CIAA1/kbd1/ptimer[10]} {myFampiga/MyMinimig/CIAA1/kbd1/ptimer[11]} {myFampiga/MyMinimig/CIAA1/kbd1/ptimer[12]} {myFampiga/MyMinimig/CIAA1/kbd1/ptimer[13]} {myFampiga/MyMinimig/CIAA1/kbd1/ptimer[14]} {myFampiga/MyMinimig/CIAA1/kbd1/ptimer[15]} {myFampiga/MyMinimig/CIAA1/kbd1/ptimer[16]} {myFampiga/MyMinimig/CIAA1/kbd1/ptimer[17]} {myFampiga/MyMinimig/CIAA1/kbd1/ptimer[18]} {myFampiga/MyMinimig/CIAA1/kbd1/ptimer[19]}]]
-connect_debug_port u_ila_0/probe1 [get_nets [list {myFampiga/MyMinimig/CIAA1/kbd1/kstate[0]} {myFampiga/MyMinimig/CIAA1/kbd1/kstate[1]} {myFampiga/MyMinimig/CIAA1/kbd1/kstate[2]}]]
-connect_debug_port u_ila_0/probe2 [get_nets [list {myFampiga/MyMinimig/CIAA1/kbd1/keydat[0]} {myFampiga/MyMinimig/CIAA1/kbd1/keydat[1]} {myFampiga/MyMinimig/CIAA1/kbd1/keydat[2]} {myFampiga/MyMinimig/CIAA1/kbd1/keydat[3]} {myFampiga/MyMinimig/CIAA1/kbd1/keydat[4]} {myFampiga/MyMinimig/CIAA1/kbd1/keydat[5]} {myFampiga/MyMinimig/CIAA1/kbd1/keydat[6]} {myFampiga/MyMinimig/CIAA1/kbd1/keydat[7]}]]
-connect_debug_port u_ila_0/probe3 [get_nets [list myFampiga/MyMinimig/CIAA1/kbd1/keyack]]
-connect_debug_port u_ila_0/probe4 [get_nets [list myFampiga/MyMinimig/CIAA1/kbd1/keyequal]]
-connect_debug_port u_ila_0/probe5 [get_nets [list myFampiga/MyMinimig/CIAA1/kbd1/keystrobe]]
-connect_debug_port u_ila_0/probe6 [get_nets [list myFampiga/MyMinimig/CIAA1/kbd1/ps2kclk]]
-connect_debug_port u_ila_0/probe7 [get_nets [list myFampiga/MyMinimig/CIAA1/kbd1/ps2kclko]]
-connect_debug_port u_ila_0/probe8 [get_nets [list myFampiga/MyMinimig/CIAA1/kbd1/ps2kdat]]
-connect_debug_port u_ila_0/probe9 [get_nets [list myFampiga/MyMinimig/CIAA1/kbd1/ps2kdato]]
-connect_debug_port u_ila_0/probe12 [get_nets [list myFampiga/MyMinimig/CIAA1/kbd1/valid]]
-
-
-connect_debug_port u_ila_0/probe4 [get_nets [list my_pal_to_ddr/myupsample/my_translate_vert/i_vsync]]
-connect_debug_port u_ila_0/probe5 [get_nets [list my_pal_to_ddr/myupsample/my_translate_vert/pix_en]]
-connect_debug_port u_ila_0/probe6 [get_nets [list my_pal_to_ddr/myupsample/my_translate_vert/r_vsync]]
 

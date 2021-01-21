@@ -44,7 +44,7 @@ module pal_to_hd_upsample(
 );
     // constants
     parameter OFFSET_HZ = 0;    // Number of pixels offset to center the screen horizontally (Higher is more to the left)
-    parameter OFFSET_VT = 48;   // Number of Lines to center the screen vertically (NOT IMPLEMENTED YET)
+    parameter OFFSET_VT = 32;   // Number of Lines to center the screen vertically (NOT IMPLEMENTED YET)
     parameter HD_H_RES  = 1360; // Resolution of the output signal
     parameter HD_H_FP   = 0;    // Horizontal front porge, move image to the right
     parameter HD_FT_BAR = 160;  // The width of the bar before and after the active area when in 4:3 mode
@@ -104,7 +104,7 @@ module pal_to_hd_upsample(
     reg [13:0]  r_line_count = 14'b0;
     reg [5:0]   r_pix_clock_dev = 6'd0;
     reg [13:0]  r_pal_h_pos = 14'b0;
-    reg [13:0]  v_div_var = 14'b0;
+    reg [11:0]  v_div_var = 12'b0;
     always @(posedge clk) begin
         // start of the horizontal line
         if (r_pal_hsync_ == 1'b1 && i_pal_hsync == 1'b0) begin
@@ -115,11 +115,8 @@ module pal_to_hd_upsample(
         if (r_pal_hsync_ == 1'b0 && i_pal_hsync == 1'b1) begin
             r_line_active   <= 1'b0; // Stop counter
             r_line_count    <= 0;  // Reset counter
-            // Detect the sample time per line
-            //if(r_pix_clock_dev == 0) begin
-                v_div_var        = ({r_line_count, 2'b0} / HD_H_RES) - 1;
-                r_pix_clock_dev <= v_div_var[5:0]; // Get the pixel clock relative to the system clock
-            //end
+            v_div_var        = (r_line_count[13:6] / (HD_H_RES>>8)) - 1; // Shift numbers to make devider circuit faster
+            r_pix_clock_dev <= v_div_var[5:0]; // Get the pixel clock relative to the system clock
         end
 
         // when active inclease counter

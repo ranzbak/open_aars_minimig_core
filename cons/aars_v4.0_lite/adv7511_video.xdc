@@ -45,6 +45,9 @@ set_property -dict {PACKAGE_PIN N26 IOSTANDARD LVTTL} [get_ports {dv_d[0]}]
 # ADV CEC clock
 set_property -dict {PACKAGE_PIN W23 IOSTANDARD LVTTL} [get_ports dv_cecclk]
 
+set_max_delay -from [get_pins -hierarchical -regexp {.*my_pal_to_ddr/_i_pal.*_reg.*/C$.*}] -to [get_pins -hierarchical -regexp {.*my_pal_to_ddr/__i_pal_.*_reg.*/D$.*}] 1.500
+
+
 
 
 
